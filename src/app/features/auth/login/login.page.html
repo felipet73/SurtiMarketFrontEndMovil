@@ -1,0 +1,77 @@
+<ion-content class="login-content">
+  <!-- Fondo animado -->
+  <div class="bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="grid"></div>
+  </div>
+
+  <div class="wrap">
+    <!-- Brand -->
+    <div class="brand" #brandEl>
+      <div class="logo">
+        <ion-icon name="leaf-outline"></ion-icon>
+      </div>
+      <h1>Surtimarket</h1>
+      <p>Hábitos sostenibles con gamificación <span class="sprout">🌱</span></p>
+    </div>
+
+    <!-- Card -->
+    <ion-card class="glass" #cardEl>
+      <ion-card-content>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <ion-item lines="none" class="field">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              type="email"
+              placeholder="Correo"
+              formControlName="email">
+            </ion-input>
+          </ion-item>
+          <div class="error" *ngIf="touched('email') && form.controls.email.invalid">
+            Ingresa un correo válido.
+          </div>
+
+          <ion-item lines="none" class="field">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              [type]="showPass ? 'text' : 'password'"
+              placeholder="Contraseña"
+              formControlName="password">
+            </ion-input>
+
+            <ion-button fill="clear" size="small" type="button" (click)="togglePass()">
+              <ion-icon [name]="showPass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <div class="error" *ngIf="touched('password') && form.controls.password.invalid">
+            Mínimo 6 caracteres.
+          </div>
+
+          <ion-button
+            expand="block"
+            class="primary"
+            [class.loading]="loading"
+            [disabled]="form.invalid || loading"
+            type="submit">
+            <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+            <span *ngIf="!loading">Entrar</span>
+          </ion-button>
+
+          <div class="actions">
+            <ion-button fill="clear" size="small" type="button" (click)="forgot()">
+              ¿Olvidaste tu contraseña?
+            </ion-button>
+            <ion-button fill="clear" size="small" type="button" (click)="goRegister()">
+              Crear cuenta
+            </ion-button>
+          </div>
+
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <small class="footer">Sostenibilidad + constancia = progreso real.</small>
+  </div>
+</ion-content>

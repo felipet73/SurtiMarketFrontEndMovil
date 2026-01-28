@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Client Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page">
+  <div class="hero">
+    <h2>Tu progreso sostenible 🌱</h2>
+    <p>Gana XP, mantén tu racha y sube de nivel.</p>
+  </div>
+
+  <ion-card class="glass">
+    <ion-card-content>
+      <div class="row">
+        <div>
+          <div class="big">Nivel {{ level }}</div>
+          <div class="muted">{{ xp }} XP · Racha {{ streak }} días</div>
+        </div>
+        <ion-chip class="tag">Weekly</ion-chip>
+      </div>
+
+      <div class="muted" style="margin-top:10px;">Progreso semanal</div>
+      <ion-progress-bar [value]="weeklyProgress"></ion-progress-bar>
+
+      <div class="buttons">
+        <ion-button expand="block" class="primary" (click)="viewChallenges()">
+          <ion-icon name="trophy-outline" slot="start"></ion-icon>
+          Ver retos
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" (click)="invite()">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Invitar amigos
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" (click)="createGroup()">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          Crear grupo
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

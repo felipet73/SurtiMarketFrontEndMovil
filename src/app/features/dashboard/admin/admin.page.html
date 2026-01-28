@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Admin Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">Salir</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page">
+  <div class="hero">
+    <h2>Panel de configuración</h2>
+    <p>Administra productos, empleados y promociones.</p>
+  </div>
+
+  <ion-list inset="true">
+    <ion-item button detail="true" *ngFor="let s of sections" (click)="open(s.key)">
+      <ion-icon [name]="s.icon" slot="start"></ion-icon>
+      <ion-label>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.desc }}</p>
+      </ion-label>
+      <ion-chip slot="end" class="tag">{{ s.badge }}</ion-chip>
+    </ion-item>
+  </ion-list>
+</ion-content>

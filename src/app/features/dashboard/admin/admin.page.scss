@@ -1,0 +1,10 @@
+.page { --background: #0b1220; }
+.hero {
+  padding: 18px 18px 8px;
+  color: rgba(255,255,255,0.92);
+  h2 { margin: 0 0 6px; font-weight: 900; }
+  p { margin: 0; opacity: .75; }
+}
+ion-list { animation: pop 420ms ease-out both; }
+@keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.tag { opacity: .9; }

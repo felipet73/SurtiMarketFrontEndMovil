@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Employee Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page">
+  <div class="hero">
+    <h2>Gestión de pedidos</h2>
+    <p>Filtra y administra el estado de los pedidos.</p>
+  </div>
+
+  <ion-segment [value]="status" (ionChange)="onStatusChange($event)">
+    <ion-segment-button value="PENDING"><ion-label>Pendientes</ion-label></ion-segment-button>
+    <ion-segment-button value="IN_PROGRESS"><ion-label>En proceso</ion-label></ion-segment-button>
+    <ion-segment-button value="DONE"><ion-label>Listos</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <ion-list inset="true">
+    <ion-item *ngFor="let o of filtered" button detail="true">
+      <ion-label>
+        <h3>{{ o.id }} — {{ o.customer }}</h3>
+        <p>Total: {{ o.total }}</p>
+      </ion-label>
+      <ion-badge slot="end">{{ o.status }}</ion-badge>
+    </ion-item>
+  </ion-list>
+</ion-content>
