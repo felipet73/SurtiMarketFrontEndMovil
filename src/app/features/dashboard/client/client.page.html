@@ -1,44 +1,272 @@
-<ion-header>
+<ion-header class="top">
   <ion-toolbar>
-    <ion-title>Client Dashboard</ion-title>
+    <ion-title>Mi Dashboard</ion-title>
+
+    <!-- Solo iconos arriba -->
+    <ion-buttons slot="end">
+      <ion-button (click)="openNotifications()">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="openPromos()">
+        <ion-icon name="pricetags-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="findFriends()">
+        <ion-icon name="people-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="findSustainableProducts()">
+        <ion-icon name="leaf-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="page">
-  <div class="hero">
-    <h2>Tu progreso sostenible 🌱</h2>
-    <p>Gana XP, mantén tu racha y sube de nivel.</p>
-  </div>
-
-  <ion-card class="glass">
+  <!-- 1) Mi Perfil -->
+  <ion-card class="glass appear">
     <ion-card-content>
-      <div class="row">
-        <div>
-          <div class="big">Nivel {{ level }}</div>
-          <div class="muted">{{ xp }} XP · Racha {{ streak }} días</div>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Mi Perfil</h2>
+          <p class="muted">Tu identidad y tu equipo</p>
         </div>
-        <ion-chip class="tag">Weekly</ion-chip>
+        <div class="actions">
+          <ion-button fill="clear" size="small" (click)="editProfile()">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="configGroup()">
+            <ion-icon name="settings-outline"></ion-icon>
+          </ion-button>
+        </div>
       </div>
 
-      <div class="muted" style="margin-top:10px;">Progreso semanal</div>
-      <ion-progress-bar [value]="weeklyProgress"></ion-progress-bar>
+      <div class="profileRow">
+        <ion-avatar class="avatar">
+          <img *ngIf="profile.avatarUrl" [src]="profile.avatarUrl" />
+        </ion-avatar>
 
-      <div class="buttons">
-        <ion-button expand="block" class="primary" (click)="viewChallenges()">
-          <ion-icon name="trophy-outline" slot="start"></ion-icon>
-          Ver retos
+        <div class="profileInfo">
+          <div class="name">{{ profile.fullName }}</div>
+          <div class="muted">Grupo: <b>{{ profile.groupName }}</b></div>
+        </div>
+
+        <div class="statsMini">
+          <div class="pill">Nivel {{ profile.level }}</div>
+        </div>
+      </div>
+
+      <div class="statsGrid">
+        <div class="stat">
+          <div class="statNum">{{ profile.totalPoints }}</div>
+          <div class="statLbl">Puntos</div>
+        </div>
+        <div class="stat">
+          <div class="statNum">{{ profile.ecoCoins }}</div>
+          <div class="statLbl">EcoCoins</div>
+        </div>
+        <div class="stat">
+          <div class="statNum">{{ sustainability.overallScore }}/10</div>
+          <div class="statLbl">Score</div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 2) Mi Perfil sostenible -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Mi Perfil sostenible</h2>
+          <p class="muted">Puntajes por dimensión (1–10)</p>
+        </div>
+        <ion-chip class="tag">Overall {{ sustainability.overallScore }}/10</ion-chip>
+      </div>
+
+      <div class="bars">
+        <div class="barRow" *ngFor="let d of dimensions">
+          <div class="barLabel">
+            <ion-icon [name]="dimIcon(d)"></ion-icon>
+            <span>{{ dimLabel(d) }}</span>
+          </div>
+
+          <div class="barTrack">
+            <ion-progress-bar [value]="scoreToProgress(sustainability.dimensionScores[d] )"></ion-progress-bar>
+          </div>
+
+          <div class="barValue">{{ sustainability!.dimensionScores[d] || "" }}/10</div>
+        </div>
+      </div>
+
+      <div class="delta">
+        <span class="muted">Progreso overall:</span>
+        <span class="deltaVal">
+          {{ sustainability.progress.deltaOverall >= 0 ? '+' : '' }}{{ sustainability.progress.deltaOverall }}
+        </span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 3) Mi EcoVecindad -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Mi EcoVecindad</h2>
+          <p class="muted">{{ community.goal }}</p>
+        </div>
+        <ion-chip class="tag">{{ community.members.length }} miembros</ion-chip>
+      </div>
+
+      <div class="members">
+        <div class="member" *ngFor="let m of community.members">
+          <ion-avatar class="memberAvatar">
+            <img *ngIf="m.avatarUrl" [src]="m.avatarUrl" />
+          </ion-avatar>
+          <div class="memberName">{{ m.name }}</div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 4) Mensajes IA (con “foto”/banner) -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="banner">
+        <div class="bannerText">
+          <div class="bannerTitle">{{ aiActive.title }}</div>
+          <div class="bannerBody">{{ aiActive.text }}</div>
+          <div class="bannerCta">✅ {{ aiActive.cta }}</div>
+        </div>
+      </div>
+
+      <div class="aiNav">
+        <ion-button size="small" fill="clear" (click)="prevAi()">
+          <ion-icon name="chevron-back-outline"></ion-icon>
         </ion-button>
 
-        <ion-button expand="block" fill="outline" (click)="invite()">
-          <ion-icon name="person-add-outline" slot="start"></ion-icon>
-          Invitar amigos
-        </ion-button>
+        <div class="dots">
+          <span class="dot" *ngFor="let _ of aiMessages; let i=index" [class.on]="i===activeAiIndex"></span>
+        </div>
 
-        <ion-button expand="block" fill="outline" (click)="createGroup()">
-          <ion-icon name="people-outline" slot="start"></ion-icon>
-          Crear grupo
+        <ion-button size="small" fill="clear" (click)="nextAi()">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </div>
     </ion-card-content>
   </ion-card>
+
+  <!-- 5) Reto Semanal Grupo -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Reto semanal · Grupo</h2>
+          <p class="muted">{{ weeklyGroupChallenge.desc }}</p>
+        </div>
+        <ion-chip class="tag">Co-op</ion-chip>
+      </div>
+
+      <div class="challengeTitle">{{ weeklyGroupChallenge.title }}</div>
+      <ion-progress-bar [value]="weeklyGroupChallenge.progress"></ion-progress-bar>
+      <div class="muted small">{{ (weeklyGroupChallenge.progress*100) | number:'1.0-0' }}% completado</div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 6) Reto Semanal Individual -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Reto semanal · Individual</h2>
+          <p class="muted">{{ weeklySoloChallenge.desc }}</p>
+        </div>
+        <ion-chip class="tag">Solo</ion-chip>
+      </div>
+
+      <div class="challengeTitle">{{ weeklySoloChallenge.title }}</div>
+      <ion-progress-bar [value]="weeklySoloChallenge.progress"></ion-progress-bar>
+      <div class="muted small">{{ (weeklySoloChallenge.progress*100) | number:'1.0-0' }}% completado</div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 7) Promociones de la semana -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Promos sostenibles</h2>
+          <p class="muted">Ofertas de la semana</p>
+        </div>
+        <ion-chip class="tag">Semana</ion-chip>
+      </div>
+
+      <ion-list class="listGlass" inset="false">
+        <ion-item button detail="true" class="itemGlass" *ngFor="let p of promos" (click)="openPromo(p)">
+          <ion-label>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.desc }}</p>
+          </ion-label>
+          <ion-badge slot="end">{{ p.price }}</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 8) Historiales -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Historial</h2>
+          <p class="muted">Actividad reciente</p>
+        </div>
+      </div>
+
+      <ion-list class="listGlass" inset="false">
+        <ion-item class="itemGlass" *ngFor="let h of history">
+          <ion-label>
+            <h3>{{ h.title }}</h3>
+            <p>{{ h.info }}</p>
+          </ion-label>
+          <ion-badge slot="end">{{ h.when }}</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 9) Mensajes tipo chat + enviar -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Mensajes</h2>
+          <p class="muted">Tu EcoVecindad</p>
+        </div>
+      </div>
+
+      <div class="chat">
+        <div class="bubble" *ngFor="let m of chat.lastMessages" [class.me]="m.from==='Tú'">
+          <div class="meta">
+            <span class="from">{{ m.from }}</span>
+            <span class="time">{{ m.time }}</span>
+          </div>
+          <div class="text">{{ m.text }}</div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <ion-input
+          class="input"
+          placeholder="Escribe un mensaje…"
+          [(ngModel)]="messageDraft">
+        </ion-input>
+
+        <ion-button class="send" (click)="sendMessage()">
+          <ion-icon name="send-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <div style="height: 18px;"></div>
 </ion-content>

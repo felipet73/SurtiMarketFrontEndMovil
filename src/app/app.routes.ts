@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role.guard';
 
+
 export const routes: Routes = [
   {
     path: '',
@@ -26,5 +27,25 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['CLIENT'])],
     loadComponent: () =>
       import('./features/dashboard/client/client.page').then(m => m.ClientPage),
+  },
+  {
+    path: 'start',
+    loadComponent: () => import('./features/sustainability/start/start.page').then( m => m.StartPage)
+  },
+  {
+    path: 'questionnaire',
+    loadComponent: () => import('./features/sustainability/questionnaire/questionnaire.page').then( m => m.QuestionnairePage)
+  },
+  {
+    path: 'sustainability/start',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/sustainability/start/start.page').then(m => m.StartPage),
+  },
+  {
+    path: 'sustainability/questionnaire',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/sustainability/questionnaire/questionnaire.page').then(m => m.QuestionnairePage),
   },
 ];

@@ -87,7 +87,12 @@ export class LoginPage implements AfterViewInit {
       console.log('Role:', role);
       if (role === 'ADMIN') this.router.navigateByUrl('/dashboard/admin', { replaceUrl: true });
       else if (role === 'EMPLOYEE') this.router.navigateByUrl('/dashboard/employee', { replaceUrl: true });
-      else this.router.navigateByUrl('/dashboard/client', { replaceUrl: true });
+      else
+      {
+        //this.router.navigateByUrl('/dashboard/client', { replaceUrl: true });
+        this.router.navigateByUrl('/sustainability/start', { replaceUrl: true });
+      }
+
     } catch (e: any) {
       await this.shakeCard();
       await this.presentToast(e?.error?.message ?? 'Login falló', 'danger');

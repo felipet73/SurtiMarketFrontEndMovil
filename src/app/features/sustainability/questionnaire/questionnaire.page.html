@@ -1,0 +1,73 @@
+<ion-header class="top">
+  <ion-toolbar>
+    <ion-title>Perfil sostenible</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page">
+  <ion-card class="glass" *ngIf="loading">
+    <ion-card-content class="center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <div class="muted">Cargando cuestionario…</div>
+    </ion-card-content>
+  </ion-card>
+
+  <ng-container *ngIf="!loading">
+    <ion-card class="glass appear">
+      <ion-card-content>
+        <div class="head">
+          <div>
+            <div class="h2">{{ currentDimLabel }}</div>
+            <div class="muted">Dimensión {{ dimIndex + 1 }} de {{ totalDims }}</div>
+          </div>
+          <ion-chip class="tag">v{{ q.version }}</ion-chip>
+        </div>
+
+        <ion-progress-bar [value]="progress"></ion-progress-bar>
+
+        <div class="qWrap">
+          <div class="qCard" *ngFor="let qu of currentQuestions">
+            <div class="qText">{{ qu.text }}</div>
+
+            <!-- Opciones 0..4 -->
+            <ion-radio-group
+              class="options"
+              [value]="answers[qu.id]"
+              (ionChange)="answers[qu.id] = $event.detail.value">
+
+              <label class="opt" *ngFor="let opt of q.options">
+                <ion-radio [value]="opt.value"></ion-radio>
+                <span>{{ opt.label }}</span>
+              </label>
+            </ion-radio-group>
+
+            <div class="picked">
+              Selección: <b>{{ optionLabel(answers[qu.id]) }}</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav">
+          <ion-button fill="outline" (click)="prev()" [disabled]="dimIndex===0 || saving">Atrás</ion-button>
+
+          <ion-button
+            *ngIf="dimIndex < totalDims-1"
+            class="primary"
+            (click)="next()"
+            [disabled]="!canGoNext() || saving">
+            Siguiente
+          </ion-button>
+
+          <ion-button
+            *ngIf="dimIndex === totalDims-1"
+            class="primary"
+            (click)="submit()"
+            [disabled]="!canGoNext() || saving">
+            <ion-spinner *ngIf="saving" name="crescent"></ion-spinner>
+            <span *ngIf="!saving">Guardar perfil</span>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>
