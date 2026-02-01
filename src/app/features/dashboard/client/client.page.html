@@ -79,7 +79,7 @@
           <h2>Mi Perfil sostenible</h2>
           <p class="muted">Puntajes por dimensión (1–10)</p>
         </div>
-        <ion-chip class="tag">Overall {{ sustainability.overallScore }}/10</ion-chip>
+        <ion-chip style="background: white;font-family: fangsong; font-weight: bold;" primaryss="tag">Overall {{ sustainability.overallScore }}/10</ion-chip>
       </div>
 
       <div class="bars">
@@ -128,6 +128,31 @@
     </ion-card-content>
   </ion-card>
 
+
+  <ion-skeleton-text *ngIf="loading" animated style="width: 100%; height: 180px;"></ion-skeleton-text>
+
+  <ng-container *ngIf="!loading && vm">
+    <ion-card class="glass appear">
+      <img [src]="vm.imageSrc" style="width: 100%; height: auto; display: block;" />
+      <ion-card-header>
+        <ion-card-title style="color:white;">Conciencia sostenible</ion-card-title>
+        <ion-card-subtitle>{{ vm.weekKey }} · {{ vm.dateKey }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let m of vm.messages">
+            <ion-label>
+              <h3 *ngIf="m.title">{{ m.title }}</h3>
+              <p>{{ m.text }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+
+
   <!-- 4) Mensajes IA (con “foto”/banner) -->
   <ion-card class="glass appear">
     <ion-card-content>
@@ -173,7 +198,8 @@
   </ion-card>
 
   <!-- 6) Reto Semanal Individual -->
-  <ion-card class="glass appear">
+  <ion-card class="glass appear">      
+
     <ion-card-content>
       <div class="cardTitle">
         <div class="titleLeft">
@@ -186,6 +212,76 @@
       <div class="challengeTitle">{{ weeklySoloChallenge.title }}</div>
       <ion-progress-bar [value]="weeklySoloChallenge.progress"></ion-progress-bar>
       <div class="muted small">{{ (weeklySoloChallenge.progress*100) | number:'1.0-0' }}% completado</div>
+
+      <!-- Juegos Indivudiales -->
+      <ion-list class="listGlass" inset="false">
+        <ion-item button detail="true" class="itemGlass" *ngFor="let p of retosIndividuales" (click)="openReto(p)">
+          <ion-label>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.desc }}</p>
+          </ion-label>
+          <ion-badge slot="end">{{ p.price }}</ion-badge>
+        </ion-item>
+      </ion-list>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Racha semanal</h2>
+          <p class="muted">Marca tus ingresos y mantén la constancia</p>
+        </div>
+
+        <ion-chip class="tag" *ngIf="streak">
+          {{ streak.weekLoggedCount }}/7
+        </ion-chip>
+      </div>
+
+      <!-- Loading skeleton simple -->
+      <div class="streakSkeleton" *ngIf="streakLoading"></div>
+
+      <ng-container *ngIf="!streakLoading && streak">
+        <div class="streakTop">
+          <div class="kpi">
+            <div class="kpiNum">{{ streak.streakCurrent }}</div>
+            <div class="kpiLbl">Racha actual</div>
+          </div>
+          <div class="kpi">
+            <div class="kpiNum">{{ streak.totalDays }}</div>
+            <div class="kpiLbl">Días registrados</div>
+          </div>
+          <div class="kpi">
+            <div class="kpiNum">{{ streak.streakBest }}</div>
+            <div class="kpiLbl">Mejor racha</div>
+          </div>
+        </div>
+
+        <div class="weekRow">
+          <div
+            class="day"
+            *ngFor="let d of streak.currentWeekDays; let i = index"
+            [ngClass]="statusClass(d)"
+            [style.animationDelay]="(i * 55) + 'ms'">
+
+            <div class="mark">
+              <span *ngIf="d.status==='logged'">✓</span>
+              <span *ngIf="d.status==='missed'">✕</span>
+              <span *ngIf="d.status==='future'"></span>
+            </div>
+
+            <div class="date">{{ d.dayOfMonth }}/{{ d.month }}</div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span class="dot logged"></span><span>Logueado</span>
+          <span class="dot missed"></span><span>Faltó</span>
+          <span class="dot future"></span><span>Futuro</span>
+        </div>
+      </ng-container>
     </ion-card-content>
   </ion-card>
 
@@ -270,3 +366,10 @@
 
   <div style="height: 18px;"></div>
 </ion-content>
+
+<ion-modal [isOpen]="puzzleOpen" (didDismiss)="closePuzzle()">
+  <ng-template>
+    <app-puzzle-modal (openPuzzle)="openPuzzle()"
+  (closePuzzle)="closePuzzle()"></app-puzzle-modal>
+  </ng-template>
+</ion-modal>

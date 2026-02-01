@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonModal,
   IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
-  IonList, IonItem, IonLabel, IonBadge, IonText, IonInput
-} from '@ionic/angular/standalone';
+  IonList, IonItem, IonLabel, IonBadge, IonText, IonInput, IonSkeletonText, IonCardHeader, IonCardTitle, IonCardSubtitle } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
+
+import { PuzzleModalPage } from '../../../pages/puzzle-modal/puzzle-modal.page';
+
+import { DashboardService } from '../../../core/services/dashboard';
+
+import { StreakService, StreakDto, WeekDayItem } from '../../../core/services/streak';
 
 type Dimension = 'waste' | 'transport' | 'energy' | 'water' | 'consumption';
 
@@ -25,8 +30,12 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
   trophyOutline,
-  personAddOutline
+  personAddOutline,
+  pulseOutline,
+  closeOutline,
 } from 'ionicons/icons';
+import { SustainabilityService } from 'src/app/core/services/sustainability';
+import { Router } from '@angular/router';
 
 
 const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water', 'consumption'] as const;
@@ -36,14 +45,92 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
   selector: 'app-client',
   templateUrl: './client.page.html',
   styleUrls: ['./client.page.scss'],
-  imports: [
-    CommonModule,
+  imports: [IonCardSubtitle, IonCardTitle, IonCardHeader, IonSkeletonText, 
+    CommonModule, IonModal, PuzzleModalPage,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
-    IonList, IonItem, IonLabel, IonBadge, IonText, IonInput, FormsModule
+    IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
   ],
 })
 export class ClientPage {
+  vm: { imageSrc: string; messages: any[]; weekKey: string; dateKey: string } | null = null;
+  loading = true;
+  puzzleOpen = false;
+
+  openPuzzle() { this.puzzleOpen = true; }
+  closePuzzle() { this.puzzleOpen = false; }
+
+  streak?: StreakDto;
+  streakLoading = true;
+  
+  constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, private streakSvc: StreakService) { }
+  sustainability: any = {
+              overallScore: 0,
+              dimensionScores: {
+                waste: 0,
+                transport: 0,
+                energy: 0,
+                water: 0,
+                consumption: 0
+              },
+              baseline: {
+                overallScore: 0,
+                dimensionScores: { waste: 0, transport: 0, energy: 0, water: 0, consumption: 0 },
+                submittedAt: '2026-01-26T04:13:39.116Z'
+              },
+              latest: {
+                overallScore: 0,
+                dimensionScores: { waste: 0, transport: 0, energy: 0, water: 0, consumption: 0 },
+                submittedAt: '2026-01-26T21:01:39.327Z'
+              },
+              progress: { deltaOverall: 0 }
+            };
+  async ngOnInit() {
+    try {
+      const me = await this.sus.getMeOrNull();
+      if (me) {
+        console.log(me,'Perfil sostenible actual');
+        this.sustainability = me;
+      } else {
+        this.router.navigateByUrl('/sustainability/questionnaire', { replaceUrl: true });
+      }
+    } finally {
+
+    }
+    this.loading = true;
+    this.dashboard.getAwareness().subscribe({
+      next: (data) => {
+        this.vm = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+      },
+    });
+    await this.loadStreak();
+  }
+
+  async loadStreak() {
+    this.streakLoading = true;
+    try {
+      // ✅ esto marca el día y devuelve el estado actualizado
+      this.streak = await this.streakSvc.markToday();
+    } finally {
+      this.streakLoading = false;
+    }
+  }
+
+  // helpers UI
+  statusClass(d: WeekDayItem) {
+    return {
+      logged: d.status === 'logged',
+      missed: d.status === 'missed',
+      future: d.status === 'future',
+      pulse: this.streak?.today === d.date && d.status === 'logged',
+    };
+  }
+
   // --- Header icon actions (por ahora console, luego rutas/servicios)
   openNotifications() { console.log('Notificaciones'); }
   openPromos() { console.log('Promociones'); }
@@ -53,7 +140,7 @@ export class ClientPage {
   // --- Tarjeta 1: Perfil
   profile = {
     fullName: 'Felipe Torres',
-    avatarUrl: '', // si está vacío, Ionic muestra placeholder
+    avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
     groupName: 'EcoVecindad Lumora',
     level: 3,
     totalPoints: 320,
@@ -71,28 +158,8 @@ export class ClientPage {
   editProfile() { console.log('Editar perfil'); }
   configGroup() { console.log('Config grupo'); }
 
-  // --- Tarjeta 2: Perfil sostenible (tu JSON)
-  sustainability = {
-    overallScore: 6,
-    dimensionScores: {
-      waste: 7,
-      transport: 5,
-      energy: 6,
-      water: 4,
-      consumption: 7
-    },
-    baseline: {
-      overallScore: 6,
-      dimensionScores: { waste: 7, transport: 4, energy: 6, water: 4, consumption: 7 },
-      submittedAt: '2026-01-26T04:13:39.116Z'
-    },
-    latest: {
-      overallScore: 6,
-      dimensionScores: { waste: 7, transport: 5, energy: 6, water: 4, consumption: 7 },
-      submittedAt: '2026-01-26T21:01:39.327Z'
-    },
-    progress: { deltaOverall: 0 }
-  };
+
+
 
   // --- Tarjeta 3: EcoVecindad (grupo + miembros)
   community = {
@@ -131,6 +198,19 @@ export class ClientPage {
     { title: 'Botella reutilizable', desc: 'Acero inoxidable', tag: 'Reusable', price: '$9.90' },
     { title: 'Bolsas compostables', desc: 'Pack x 30', tag: 'Waste', price: '$3.50' },
   ];
+
+  retosIndividuales = [
+    { title: 'Puzzle- Arma la Imagen de la semana', desc: 'Juega y ordena las piezas de la imagen de la semana', tag: 'Eco', price: 'Enter' },
+    { title: 'Botella reutilizable', desc: 'Acero inoxidable', tag: 'Reusable', price: '$9.90' },
+    { title: 'Bolsas compostables', desc: 'Pack x 30', tag: 'Waste', price: '$3.50' },
+  ];
+  openReto(p: any) { 
+    console.log('Reto:', p); 
+    if (p.title == 'Puzzle- Arma la Imagen de la semana'){
+      this.openPuzzle();
+
+    }
+  }
 
   openPromo(p: any) { console.log('Promo:', p); }
 
@@ -187,4 +267,5 @@ export class ClientPage {
   get aiActive() {
     return this.aiMessages[this.activeAiIndex];
   }
+  
 }

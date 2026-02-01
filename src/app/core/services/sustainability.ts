@@ -43,7 +43,8 @@ export class SustainabilityService {
   }
 
   // ✅ Payload recomendado (pregunta id + value)
-  async submitAssessment(answers: Array<{ id: number; value: number }>) {
+  async submitAssessment(answers1: Array<{ id: number; value: number }>) {
+    const answers = answers1.map(a => a.value);
     return await firstValueFrom(this.api.post('/sustainability/assessment', { answers }));
   }
 }

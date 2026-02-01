@@ -48,4 +48,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/sustainability/questionnaire/questionnaire.page').then(m => m.QuestionnairePage),
   },
+  {
+    path: 'puzzle-modal',
+    loadComponent: () => import('./pages/puzzle-modal/puzzle-modal.page').then( m => m.PuzzleModalPage)
+  },
 ];

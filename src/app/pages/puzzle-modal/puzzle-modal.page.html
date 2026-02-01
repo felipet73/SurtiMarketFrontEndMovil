@@ -1,0 +1,89 @@
+<ion-header class="modal-header">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title>Rompecabezas semanal</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon [icon]="icons.close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-body" style="height:100vh;">
+
+  <!-- Loading skeleton -->
+  <div class="card" *ngIf="loading">
+    <ion-skeleton-text animated style="width: 60%; height: 18px;"></ion-skeleton-text>
+    <div class="puzzle-grid skeleton">
+      <div class="tile" *ngFor="let _ of [0,1,2,3,4,5,6,7,8]"></div>
+    </div>
+    <ion-skeleton-text animated style="width: 40%; height: 14px; margin-top: 12px;"></ion-skeleton-text>
+  </div>
+
+  <!-- Error -->
+  <div class="card error" *ngIf="!loading && errorMsg">
+    <div class="error-title">Ups</div>
+    <div class="error-text">{{ errorMsg }}</div>
+    <ion-button expand="block" (click)="load()">Reintentar</ion-button>
+  </div>
+
+  <!-- Content -->
+  <div class="card" *ngIf="!loading && !errorMsg">
+
+    <!-- Win banner -->
+    <div class="win-banner" *ngIf="winBanner">
+      <div class="win-title">
+        <ion-icon [name]="icons.trophy"></ion-icon>
+        ¡Completado!
+      </div>
+      <div class="win-sub" *ngIf="rewardGranted">
+        +{{ winPoints }} XP · +{{ winEcoCoins }} EcoCoins
+      </div>
+      <div class="win-sub" *ngIf="isSolved && !rewardGranted">
+        Listo para reclamar tu recompensa
+      </div>
+    </div>
+
+    <!-- Confetti overlay -->
+    <div class="confetti-wrap" *ngIf="winBanner">
+      <canvas #confettiCanvas class="confetti-canvas"></canvas>
+    </div>
+
+    <!-- Puzzle grid -->
+    <div class="puzzle-grid">
+      <ng-container *ngFor="let pos of positions; let i = index">
+        <button
+          type="button"
+          class="tile"
+          [class.blank]="pos === -1"
+          [class.movable]="isMovable(i)"
+          [class.invalid]="invalidSlot === i"
+          (click)="onSlotTap(i)"
+        >
+          <img *ngIf="pos !== -1" [src]="tileUrl(pos)" alt="tile">
+          <div *ngIf="pos === -1" class="blank-hint">⬚</div>
+        </button>
+      </ng-container>
+    </div>
+
+    <!-- Claim button -->
+    <ion-button
+      class="claim-btn"
+      expand="block"
+      [disabled]="!canClaim()"
+      (click)="claim()"
+    >
+      <ion-spinner *ngIf="claiming" name="crescent" style="margin-right: 10px;"></ion-spinner>
+      RECLAMAR RECOMPENSA
+    </ion-button>
+
+  </div>
+
+  <!-- Preview -->
+  <div class="card preview-card" *ngIf="!loading && !errorMsg">
+    <div class="preview-title">Referencia</div>
+    <img class="preview-img" [src]="imageUrl" alt="preview">
+  </div>
+
+</ion-content>

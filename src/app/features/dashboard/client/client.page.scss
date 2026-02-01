@@ -303,3 +303,203 @@ tag md ion-activatable hydrated {
   border-radius: 999px;
   color:white;
 }
+
+ion-card.glass > ion-card-content ion-list,
+ion-card.glass ion-list,
+ion-card.glass .listGlass {
+  --background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.03);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+ion-card.glass > ion-card-content ion-list ion-item {
+  --background: transparent;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+ion-card.glass > ion-card-content ion-list,
+ion-card.glass ion-list,
+ion-card.glass .listGlass {
+  --background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.03);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+ion-card.glass > ion-card-content ion-list ion-item {
+  --background: transparent;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+ion-card.glass ion-list ion-item ion-label h3 {
+  color: #ffcc33; /* amarillo */
+  font-weight: 900;
+  margin: 0;
+  font-size: 15px;
+}
+
+ion-card.glass ion-list ion-item ion-label p {
+  color: rgba(255,255,255,0.95); /* blanco */
+  margin: 0;
+  font-size: 13px;
+}
+
+
+
+
+
+
+
+.streakTop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.kpi {
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align: center;
+}
+.kpiNum {
+  font-weight: 950;
+  font-size: 18px;
+  color: rgba(255,255,255,0.95);
+}
+.kpiLbl {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.68);
+}
+
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.day {
+  border-radius: 14px;
+  padding: 10px 6px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+
+  opacity: 0;
+  transform: translateY(6px);
+  animation: dayIn 380ms ease-out forwards;
+}
+
+@keyframes dayIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 950;
+  font-size: 15px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.date {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 700;
+}
+
+/* Estados */
+.day.logged {
+  border-color: rgba(109,255,182,0.25);
+  background: rgba(109,255,182,0.08);
+}
+.day.logged .mark {
+  background: rgba(109,255,182,0.20);
+}
+
+.day.missed {
+  border-color: rgba(255,120,120,0.25);
+  background: rgba(255,120,120,0.08);
+}
+.day.missed .mark {
+  background: rgba(255,120,120,0.18);
+}
+
+.day.future {
+  border-color: rgba(0,170,255,0.20);
+  background: rgba(0,170,255,0.06);
+}
+.day.future .mark {
+  background: rgba(0,170,255,0.14);
+}
+
+/* Pulse solo en HOY si logged */
+.day.pulse {
+  animation: dayIn 380ms ease-out forwards, pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(109,255,182,0.0); }
+  50% { box-shadow: 0 0 22px rgba(109,255,182,0.18); }
+}
+
+/* Leyenda */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: rgba(255,255,255,0.65);
+  font-size: 12px;
+}
+.legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.legend .dot.logged { background: rgba(109,255,182,0.35); }
+.legend .dot.missed { background: rgba(255,120,120,0.35); }
+.legend .dot.future { background: rgba(0,170,255,0.30); }
+
+/* Skeleton ultra simple */
+.streakSkeleton {
+  height: 120px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.streakSkeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-40%);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.10),
+    rgba(255,255,255,0.02)
+  );
+  animation: shimmer 1.2s linear infinite;
+}
+@keyframes shimmer { to { transform: translateX(40%); } }
+
+
+.tag {  
+  color: white;
+}
