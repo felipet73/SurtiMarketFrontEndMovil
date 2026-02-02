@@ -1,0 +1,141 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar style="background: #202a4fd4 !important; color: white !important;">
+        <ion-title>Quiz semanal</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">      
+
+      <ion-card class="glass heroCard anim-in" *ngIf="loading; else loadedTpl">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ng-template #loadedTpl>
+        <ng-container *ngIf="data; else noDataTpl">
+      <!-- Confetti overlay al terminar -->
+      <div class="confetti" *ngIf="done"></div>
+
+      <!-- Header card (imagen + foco) -->
+      <ion-card class="glass appear heroCard anim-in">
+        <ion-card-content>
+          <div class="hero">
+            <img class="heroImg" *ngIf="imgUrl" [src]="imgUrl" alt="Imagen semanal" />
+            <div class="heroMeta">
+              <div class="title">{{ data.instance.payload.title }}</div>
+              <div class="desc">{{ data.instance.payload.description }}</div>
+
+              <div class="chips">
+                <ion-chip class="tag">Focus: {{ dimLabel(data.focusDimension) }}</ion-chip>
+                <ion-chip class="tag">EcoCoins: {{ data.instance.payload.ecoCoinsReward }}</ion-chip>
+                <ion-chip class="tag">Semana: {{ data.instance.weekKey }}</ion-chip>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Si terminó: pantalla final -->
+      <ion-card class="glass appear heroCard anim-in" *ngIf="done && result">
+        <ion-card-content>
+          <div class="finalTitle">¡Muchas gracias! 🎉</div>
+          <div class="muted">
+            Has acertado <b>{{ result.correctCount }}</b> de <b>{{ result.totalQuestions }}</b>
+            ({{ result.scorePercent }}%).
+          </div>
+
+          <div class="reward" *ngIf="result.rewardGranted; else noReward">
+            ✅ Premio obtenido: <b>{{ result.ecoCoinsGranted }}</b> EcoCoins
+          </div>
+          <ng-template #noReward>
+            <div class="reward bad">❌ No has obtenido premio, mejor suerte la próxima.</div>
+          </ng-template>
+
+          <ion-button class="primary" expand="block" (click)="close()">Cerrar</ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Stepper preguntas -->
+      <ion-card class="glass appear heroCard anim-in" *ngIf="!done">
+        <ion-card-content>
+          <div class="stepHead">
+            <div>
+              <div class="h2">Pregunta {{ step + 1 }} / {{ qTotal }}</div>
+              <div class="muted">Enfoque: {{ dimLabel(data.focusDimension) }}</div>
+            </div>
+            <ion-chip class="tag">{{ (progress*100) | number:'1.0-0' }}%</ion-chip>
+          </div>
+
+          <ion-progress-bar [value]="progress"></ion-progress-bar>
+
+          <div class="qText">{{ currentQ?.q }}</div>
+
+          <div class="choices">
+            <button
+              class="choice"
+              *ngFor="let c of currentQ?.choices; let i = index"
+              (click)="pick(i)"
+              [class.selected]="answers[step]===i">
+              <span class="bullet">{{ i + 1 }}</span>
+              <span class="choiceText">{{ c }}</span>
+            </button>
+          </div>
+
+          <div class="nav">
+            <ion-button fill="outline" (click)="prev()" [disabled]="!canPrev()">
+              <ion-icon slot="start" [icon]="icons.prev"></ion-icon>
+              Atrás
+            </ion-button>
+
+            <ion-button
+              *ngIf="step < qTotal - 1"
+              class="primary"
+              (click)="next()"
+              [disabled]="!canNext()">
+              Siguiente
+              <ion-icon slot="end" [icon]="icons.next"></ion-icon>
+            </ion-button>
+
+            <ion-button
+              *ngIf="step === qTotal - 1"
+              class="primary"
+              (click)="submit()"
+              [disabled]="!canSubmit()">
+              <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
+              <span *ngIf="!submitting">Enviar</span>
+              <ion-icon *ngIf="!submitting" slot="end" [icon]="icons.send"></ion-icon>
+            </ion-button>
+          </div>
+
+          <!-- <div class="muted small" *ngIf="data.submissionStatus?.hasSubmitted">
+            Nota: ya enviaste este quiz antes ({{ data.submissionStatus.scorePercent }}%). Si el backend lo hace idempotente,
+            podría devolverte el mismo resultado.
+          </div> -->
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+  </ng-template>
+
+      <ng-template #noDataTpl>
+        <ion-card class="glass">
+          <ion-card-content>No llegó data.</ion-card-content>
+        </ion-card>
+      </ng-template>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -7,12 +7,19 @@ import {
 import { FormsModule } from '@angular/forms';
 
 import { PuzzleModalPage } from '../../../pages/puzzle-modal/puzzle-modal.page';
+import { WeeklyQuizModalComponent } from '../../challenges/weekly-quiz-modal/weekly-quiz-modal.component';
 
 import { DashboardService } from '../../../core/services/dashboard';
 
 import { StreakService, StreakDto, WeekDayItem } from '../../../core/services/streak';
 
 type Dimension = 'waste' | 'transport' | 'energy' | 'water' | 'consumption';
+
+import { GroupsService } from '../../../core/services/group';
+import { GroupMeDto } from '../../../core/dto/group-me.dto';
+
+import { FriendsService } from '../../../core/services/friends';
+import { FriendsMeDto, FriendUserDto } from '../../../core/dto/friends-me.dto';
 
 import {
   notificationsOutline,
@@ -36,6 +43,7 @@ import {
 } from 'ionicons/icons';
 import { SustainabilityService } from 'src/app/core/services/sustainability';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth';
 
 
 const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water', 'consumption'] as const;
@@ -46,7 +54,7 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
   templateUrl: './client.page.html',
   styleUrls: ['./client.page.scss'],
   imports: [IonCardSubtitle, IonCardTitle, IonCardHeader, IonSkeletonText, 
-    CommonModule, IonModal, PuzzleModalPage,
+    CommonModule, IonModal, PuzzleModalPage, WeeklyQuizModalComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
     IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
@@ -56,14 +64,33 @@ export class ClientPage {
   vm: { imageSrc: string; messages: any[]; weekKey: string; dateKey: string } | null = null;
   loading = true;
   puzzleOpen = false;
+  quizOpen = false;
+  profile = {
+    fullName: 'Felipe Torres',
+    avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
+    groupName: 'EcoVecindad Lumora',
+    level: 3,
+    totalPoints: 320,
+    ecoCoins: 48,
+  };
 
   openPuzzle() { this.puzzleOpen = true; }
   closePuzzle() { this.puzzleOpen = false; }
+  openWeeklyQuiz() { this.quizOpen = true; }
+  closeWeeklyQuiz() { this.quizOpen = false; }
 
   streak?: StreakDto;
   streakLoading = true;
+
+  groupMe?: GroupMeDto;
+  groupLoading = true;
+
+  friendsMe?: FriendsMeDto;
+  friendsLoading = true;
+
   
-  constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, private streakSvc: StreakService) { }
+  constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
+    private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -94,9 +121,7 @@ export class ClientPage {
       } else {
         this.router.navigateByUrl('/sustainability/questionnaire', { replaceUrl: true });
       }
-    } finally {
-
-    }
+    } finally {}
     this.loading = true;
     this.dashboard.getAwareness().subscribe({
       next: (data) => {
@@ -109,12 +134,51 @@ export class ClientPage {
       },
     });
     await this.loadStreak();
+
+    let user = await this.auth.me();
+    console.log('Usuario actual:', user);
+    this.profile.fullName = user.fullName || user?.username || user.displayName || '';
+    this.profile.avatarUrl = user.avatarUrl || this.profile.avatarUrl; // default avatar
+
+    this.loadGroup();
+    this.loadFriends();
+
+  }
+
+  
+  async loadFriends() {
+    this.friendsLoading = true;
+    try {
+      this.friendsMe = await this.friendsSvc.getMe();
+    } finally {
+      this.friendsLoading = false;
+    }
+  }
+
+  // Helpers para UI
+  initials(name?: string | null) {
+    const n = (name ?? '').trim();
+    if (!n) return '?';
+    const parts = n.split(/\s+/).slice(0, 2);
+    return parts.map(p => p[0]?.toUpperCase()).join('');
+  }
+
+  trackByUserId(_: number, u: FriendUserDto | null) {
+    return u?.id ?? _;
+  }
+  
+  async loadGroup() {
+    this.groupLoading = true;
+    try {
+      this.groupMe = await this.groups.getMe();
+    } finally {
+      this.groupLoading = false;
+    }
   }
 
   async loadStreak() {
     this.streakLoading = true;
     try {
-      // ✅ esto marca el día y devuelve el estado actualizado
       this.streak = await this.streakSvc.markToday();
     } finally {
       this.streakLoading = false;
@@ -137,15 +201,10 @@ export class ClientPage {
   findFriends() { console.log('Buscar amigos'); }
   findSustainableProducts() { console.log('Buscar productos sostenibles'); }
   dimensions = DIMENSIONS;
-  // --- Tarjeta 1: Perfil
-  profile = {
-    fullName: 'Felipe Torres',
-    avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
-    groupName: 'EcoVecindad Lumora',
-    level: 3,
-    totalPoints: 320,
-    ecoCoins: 48,
-  };
+  
+  
+
+  
 
 
   icons = {
@@ -166,11 +225,13 @@ export class ClientPage {
     name: 'EcoVecindad Lumora',
     goal: 'Reducir residuos del barrio',
     members: [
-      { name: 'Ana', avatarUrl: '' },
-      { name: 'Luis', avatarUrl: '' },
-      { name: 'Majo', avatarUrl: '' },
-      { name: 'Carlos', avatarUrl: '' },
-      { name: 'Sofía', avatarUrl: '' },
+      { name: 'Ana', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Luis', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Majo', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Carlos', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Sofía', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Ana', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
+      { name: 'Luis', avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg' },
     ]
   };
 
@@ -200,16 +261,18 @@ export class ClientPage {
   ];
 
   retosIndividuales = [
-    { title: 'Puzzle- Arma la Imagen de la semana', desc: 'Juega y ordena las piezas de la imagen de la semana', tag: 'Eco', price: 'Enter' },
-    { title: 'Botella reutilizable', desc: 'Acero inoxidable', tag: 'Reusable', price: '$9.90' },
-    { title: 'Bolsas compostables', desc: 'Pack x 30', tag: 'Waste', price: '$3.50' },
+    { title: 'Puzzle- Arma la Imagen de la semana', desc: 'Juega y ordena las piezas de la imagen de la semana', tag: 'Eco', price: 'Entrar' },
+    { title: 'Quizz Semanal', desc: 'Responde tu quiz de la semana y gana EcoCoins', tag: 'Reusable', price: 'Entrar' },
   ];
   openReto(p: any) { 
     console.log('Reto:', p); 
     if (p.title == 'Puzzle- Arma la Imagen de la semana'){
       this.openPuzzle();
-
     }
+    if (p.title == 'Quizz Semanal'){
+      this.openWeeklyQuiz();
+    }
+
   }
 
   openPromo(p: any) { console.log('Promo:', p); }

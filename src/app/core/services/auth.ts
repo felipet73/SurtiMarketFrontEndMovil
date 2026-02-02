@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiService } from './api';
-import { AuthUser, LoginResponse, Role } from '../models/auth.models';
+import { AuthUser, LoginResponse, Role, UserResponse } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -66,4 +66,12 @@ export class AuthService {
     localStorage.removeItem(this.userKey);
     this.currentUserSubject.next(null);
   }
+
+  async me() {
+    const res = await firstValueFrom(
+      this.api.get<UserResponse>('/auth/me' )
+    );    
+    return res;
+  }
+
 }
