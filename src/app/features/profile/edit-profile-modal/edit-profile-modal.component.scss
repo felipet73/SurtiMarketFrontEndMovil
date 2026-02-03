@@ -1,0 +1,127 @@
+/* Estilo glass similar al quiz semanal */
+.page {
+  --background: radial-gradient(circle at 20% 15%, rgba(109,255,182,0.14), transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(0,170,255,0.12), transparent 42%),
+                linear-gradient(180deg, #0b1220 0%, #070b14 100%);
+}
+
+.top ion-toolbar {
+  --background: rgba(10, 16, 28, 0.65);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.40);
+}
+
+.appear { animation: pop 520ms ease-out both; }
+@keyframes pop { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+
+.center { display: grid; justify-items: center; gap: 12px; padding: 18px; }
+.muted { color: rgba(255,255,255,0.70); }
+
+.profileHeader {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.avatarLarge {
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.avatarPlaceholder {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  font-weight: 900;
+}
+
+.profileMeta .title {
+  font-weight: 950;
+  color: rgba(255,255,255,0.95);
+}
+
+.avatarActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.listGlass {
+  background: rgba(255,255,255,0.03);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.itemGlass {
+  --background: transparent;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.sectionTitle {
+  margin: 10px 6px 6px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.85);
+  font-size: 13px;
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.primary { --border-radius: 14px; }
+
+.error {
+  margin-top: 8px;
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+.heroCard { animation-delay: 40ms; }
+.anim-in { animation: fadeUp 520ms cubic-bezier(.2,.9,.2,1) both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px) scale(.99); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.custom {
+    color: khaki !important;
+}
+
+.label-stacked.sc-ion-label-md-h {
+    color: azure !important;
+}
+
+.select-text {
+    color: aquamarine !important;
+}
+
+.item.sc-ion-label-md-h, .item .sc-ion-label-md-h {
+    color: bisque !important;
+}
+

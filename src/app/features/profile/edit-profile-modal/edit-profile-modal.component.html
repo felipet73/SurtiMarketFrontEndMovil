@@ -1,0 +1,147 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar style=" background: rgb(16 11 83) !important;color: white !important;">
+        <ion-title>Editar perfil</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass heroCard anim-in" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ng-container *ngIf="!loading && form">
+        <ion-card class="glass appear heroCard anim-in">
+          <ion-card-content>
+            <div class="profileHeader">
+              <ion-avatar class="avatarLarge">
+                <img *ngIf="avatarPreview; else avatarPlaceholder" [src]="avatarPreview" />
+              </ion-avatar>
+              <ng-template #avatarPlaceholder>
+                <div class="avatarPlaceholder">?</div>
+              </ng-template>
+              <div class="profileMeta">
+                <div class="title">Tu perfil</div>
+                <div class="muted">Actualiza tu informacion</div>
+              </div>
+            </div>
+
+            <div class="avatarActions">
+              <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+              <input #cameraInput type="file" accept="image/*" capture="environment" hidden (change)="onFileSelected($event)" />
+              <ion-button fill="outline" size="small" (click)="triggerFile(fileInput)">
+                <ion-icon slot="start" [icon]="icons.image"></ion-icon>
+                Cambiar imagen
+              </ion-button>
+              <ion-button fill="outline" size="small" (click)="triggerFile(cameraInput)">
+                <ion-icon slot="start" [icon]="icons.camera"></ion-icon>
+                Tomar foto
+              </ion-button>
+            </div>
+
+            <ion-list class="listGlass" inset="false">
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Nombre completo</ion-label>
+                <ion-input [(ngModel)]="form.fullName" placeholder="Nombre completo"></ion-input>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Usuario</ion-label>
+                <ion-input [(ngModel)]="form.username" placeholder="Usuario"></ion-input>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Nombre para mostrar</ion-label>
+                <ion-input [(ngModel)]="form.displayName" placeholder="Nombre para mostrar"></ion-input>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Avatar URL</ion-label>
+                <ion-input [(ngModel)]="form.avatarUrl" (ionInput)="avatarPreview = form.avatarUrl" placeholder="URL del avatar"></ion-input>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Email</ion-label>
+                <ion-input [value]="form.email" readonly></ion-input>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Roles</ion-label>
+                <ion-input [value]="form.roles.join(', ')" readonly></ion-input>
+              </ion-item>
+
+              <div class="sectionTitle">Privacidad</div>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Visibilidad de perfil</ion-label>
+                <ion-select [(ngModel)]="form.privacy.profileVisibility" interface="popover">
+                  <ion-select-option value="PUBLIC">Publico</ion-select-option>
+                  <ion-select-option value="COMMUNITY">Comunidad</ion-select-option>
+                  <ion-select-option value="GROUP_ONLY">Solo grupo</ion-select-option>
+                  <ion-select-option value="PRIVATE">Privado</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Email visible para busqueda</ion-label>
+                <ion-select [(ngModel)]="form.privacy.emailSearchable" interface="popover">
+                  <ion-select-option [value]="true">Si</ion-select-option>
+                  <ion-select-option [value]="false">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label position="stacked">Solicitudes de amistad</ion-label>
+                <ion-select [(ngModel)]="form.privacy.friendRequests" interface="popover">
+                  <ion-select-option value="ANYONE">Cualquiera</ion-select-option>
+                  <ion-select-option value="FRIENDS_OF_FRIENDS">Amigos de amigos</ion-select-option>
+                  <ion-select-option value="NOBODY">Nadie</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <div class="sectionTitle">Estado</div>
+              <ion-item class="itemGlass custom">
+                <ion-label>Activo</ion-label>
+                <ion-toggle slot="end" [(ngModel)]="form.isActive"></ion-toggle>
+              </ion-item>
+
+              <ion-item class="itemGlass custom">
+                <ion-label>Dar de baja</ion-label>
+                <ion-button fill="outline" color="danger" size="small" slot="end" (click)="setInactive()">
+                  <ion-icon slot="start" [icon]="icons.ban"></ion-icon>
+                  Inactivar
+                </ion-button>
+              </ion-item>
+            </ion-list>
+
+            <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+            <div class="actions">
+              <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+              <ion-button class="primary" (click)="submit()" [disabled]="saving">
+                <ion-spinner *ngIf="saving" name="crescent"></ion-spinner>
+                <span *ngIf="!saving">Actualizar</span>
+                <ion-icon *ngIf="!saving" slot="end" [icon]="icons.save"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ng-container>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

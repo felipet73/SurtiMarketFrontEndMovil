@@ -74,4 +74,31 @@ export class AuthService {
     return res;
   }
 
+  async updateProfile(payload: {
+    fullName: string;
+    username: string;
+    displayName: string;
+    avatarUrl: string;
+    privacy: {
+      profileVisibility: string;
+      emailSearchable: boolean;
+      friendRequests: string;
+    };
+    email: string;
+    roles: string[];
+    isActive: boolean;
+  }) {
+    const res = await firstValueFrom(
+      this.api.post<UserResponse>('/auth/profile', payload)
+    );
+    const token = this.getToken();
+    if (token) {
+      this.saveAuth(token, res as AuthUser);
+    } else {
+      localStorage.setItem(this.userKey, JSON.stringify(res));
+      this.currentUserSubject.next(res as AuthUser);
+    }
+    return res;
+  }
+
 }

@@ -46,7 +46,7 @@
 
         <div class="profileInfo">
           <div class="name1">{{ profile.fullName }}</div>
-           <ng-template #noGroupTpl>    
+           <ng-template #noGroupTpl>
               <div class="muted">Grupo: <b>{{ 'Ninguno' }}</b></div>
           </ng-template>
            <ng-container *ngIf="!groupLoading && groupMe">
@@ -68,7 +68,10 @@
           <div class="statLbl">Puntos</div>
         </div>
         <div class="stat">
-          <div class="statNum">{{ profile.ecoCoins }}</div>
+          <ng-container *ngIf="!walletLoading && wallet">
+          <div class="statNum">{{ wallet.ecoCoinsBalance }}</div>
+          </ng-container>
+
           <div class="statLbl">EcoCoins</div>
         </div>
         <div class="stat">
@@ -76,6 +79,42 @@
           <div class="statLbl">Score</div>
         </div>
       </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 1.5) EcoCoins -->
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="ecoHeader">
+        <div class="titleLeft">
+          <h2>EcoCoins</h2>
+          <p class="muted">Saldo disponible</p>
+        </div>
+        <ion-badge class="ecoBadge">Disponible</ion-badge>
+      </div>
+
+      <div *ngIf="walletLoading" class="muted">Cargando EcoCoins...</div>
+
+      <ng-container *ngIf="!walletLoading && wallet">
+        <div class="ecoValue">{{ wallet.ecoCoinsBalance }}</div>
+
+        <ion-list class="listGlass" inset="false" *ngIf="wallet.lastMovements?.length; else noWalletMovements">
+          <ion-item class="itemGlass" *ngFor="let m of wallet.lastMovements">
+            <ion-label>
+              <h3>{{ m.type === 'EARN' ? 'Ganado' : m.type }}</h3>
+              <p>{{ m.note }}</p>
+            </ion-label>
+            <div slot="end" class="ecoMeta">
+              <div class="ecoAmount">{{ m.type === 'EARN' ? '+' : '-' }}{{ m.amount }}</div>
+              <div class="ecoDate">{{ m.createdAt | date:'dd/MM/yyyy' }}</div>
+            </div>
+          </ion-item>
+        </ion-list>
+
+        <ng-template #noWalletMovements>
+          <div class="muted">Sin movimientos recientes.</div>
+        </ng-template>
+      </ng-container>
     </ion-card-content>
   </ion-card>
 
@@ -356,7 +395,7 @@
   </ion-card>
 
   <!-- 6) Reto Semanal Individual -->
-  <ion-card class="glass appear">      
+  <ion-card class="glass appear">
 
     <ion-card-content>
       <div class="cardTitle">
@@ -537,3 +576,9 @@
   [open]="quizOpen"
   (closed)="quizOpen = false">
 </app-weekly-quiz-modal>
+
+<app-edit-profile-modal
+  *ngIf="editProfileOpen"
+  [open]="editProfileOpen"
+  (closed)="closeEditProfile()">
+</app-edit-profile-modal>

@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PuzzleModalPage } from '../../../pages/puzzle-modal/puzzle-modal.page';
 import { WeeklyQuizModalComponent } from '../../challenges/weekly-quiz-modal/weekly-quiz-modal.component';
+import { EditProfileModalComponent } from '../../profile/edit-profile-modal/edit-profile-modal.component';
 
 import { DashboardService } from '../../../core/services/dashboard';
 
@@ -20,6 +21,7 @@ import { GroupMeDto } from '../../../core/dto/group-me.dto';
 
 import { FriendsService } from '../../../core/services/friends';
 import { FriendsMeDto, FriendUserDto } from '../../../core/dto/friends-me.dto';
+import { WalletService, WalletMeDto } from '../../../core/services/wallet';
 
 import {
   notificationsOutline,
@@ -55,6 +57,7 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
   styleUrls: ['./client.page.scss'],
   imports: [IonCardSubtitle, IonCardTitle, IonCardHeader, IonSkeletonText, 
     CommonModule, IonModal, PuzzleModalPage, WeeklyQuizModalComponent,
+    EditProfileModalComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
     IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
@@ -65,6 +68,7 @@ export class ClientPage {
   loading = true;
   puzzleOpen = false;
   quizOpen = false;
+  editProfileOpen = false;
   profile = {
     fullName: 'Felipe Torres',
     avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
@@ -88,9 +92,12 @@ export class ClientPage {
   friendsMe?: FriendsMeDto;
   friendsLoading = true;
 
+  wallet?: WalletMeDto;
+  walletLoading = true;
   
   constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
-    private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService) { }
+    private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService,
+    private walletSvc: WalletService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -135,13 +142,11 @@ export class ClientPage {
     });
     await this.loadStreak();
 
-    let user = await this.auth.me();
-    console.log('Usuario actual:', user);
-    this.profile.fullName = user.fullName || user?.username || user.displayName || '';
-    this.profile.avatarUrl = user.avatarUrl || this.profile.avatarUrl; // default avatar
+    await this.loadProfile();
 
     this.loadGroup();
     this.loadFriends();
+    this.loadWallet();
 
   }
 
@@ -185,6 +190,22 @@ export class ClientPage {
     }
   }
 
+  async loadProfile() {
+    let user = await this.auth.me();
+    console.log('Usuario actual:', user);
+    this.profile.fullName = user.fullName || user?.username || user.displayName || '';
+    this.profile.avatarUrl = user.avatarUrl || this.profile.avatarUrl; // default avatar
+  }
+
+  async loadWallet() {
+    this.walletLoading = true;
+    try {
+      this.wallet = await this.walletSvc.getMe();
+    } finally {
+      this.walletLoading = false;
+    }
+  }
+
   // helpers UI
   statusClass(d: WeekDayItem) {
     return {
@@ -214,7 +235,11 @@ export class ClientPage {
     sustainable: leafOutline,
   };
 
-  editProfile() { console.log('Editar perfil'); }
+  editProfile() { this.editProfileOpen = true; }
+  closeEditProfile() {
+    this.editProfileOpen = false;
+    this.loadProfile();
+  }
   configGroup() { console.log('Config grupo'); }
 
 
