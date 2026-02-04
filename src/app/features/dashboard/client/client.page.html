@@ -16,6 +16,13 @@
       <ion-button (click)="findSustainableProducts()">
         <ion-icon icon="leaf-outline"></ion-icon>
       </ion-button>
+      <ion-button (click)="openCart()">
+        <ion-icon icon="cart-outline"></ion-icon>
+        <ion-badge class="cartBadge" *ngIf="cartCount() > 0">{{ cartCount() }}</ion-badge>
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon icon="log-out-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -582,3 +589,22 @@
   [open]="editProfileOpen"
   (closed)="closeEditProfile()">
 </app-edit-profile-modal>
+
+<app-privacy-consent-modal
+  *ngIf="privacyOpen"
+  [open]="privacyOpen"
+  (closed)="closePrivacy()">
+</app-privacy-consent-modal>
+
+<app-products-modal
+  *ngIf="productsOpen"
+  [open]="productsOpen"
+  (closed)="closeProducts()">
+</app-products-modal>
+
+<app-cart-modal
+  *ngIf="cartOpen"
+  [open]="cartOpen"
+  (closed)="closeCart()"
+  (purchased)="loadWallet()">
+</app-cart-modal>

@@ -299,6 +299,19 @@
   font-size: 20px;
 }
 
+.top ion-button {
+  position: relative;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -8px;
+  right: 2px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
 tag md ion-activatable hydrated {
   border-radius: 999px;
   color:white;

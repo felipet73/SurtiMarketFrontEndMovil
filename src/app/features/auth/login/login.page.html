@@ -75,3 +75,9 @@
     <small class="footer">Sostenibilidad + constancia = progreso real.</small>
   </div>
 </ion-content>
+
+<app-register-modal
+  *ngIf="registerOpen"
+  [open]="registerOpen"
+  (closed)="closeRegister()">
+</app-register-modal>

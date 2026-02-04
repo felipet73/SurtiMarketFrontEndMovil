@@ -9,6 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { PuzzleModalPage } from '../../../pages/puzzle-modal/puzzle-modal.page';
 import { WeeklyQuizModalComponent } from '../../challenges/weekly-quiz-modal/weekly-quiz-modal.component';
 import { EditProfileModalComponent } from '../../profile/edit-profile-modal/edit-profile-modal.component';
+import { PrivacyConsentModalComponent } from '../../privacy/privacy-consent-modal/privacy-consent-modal.component';
+import { ProductsModalComponent } from '../../products/products-modal/products-modal.component';
+import { CartModalComponent } from '../../cart/cart-modal/cart-modal.component';
 
 import { DashboardService } from '../../../core/services/dashboard';
 
@@ -42,10 +45,12 @@ import {
   personAddOutline,
   pulseOutline,
   closeOutline,
+  logOutOutline,
 } from 'ionicons/icons';
 import { SustainabilityService } from 'src/app/core/services/sustainability';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth';
+import { CartService } from 'src/app/core/services/cart';
 
 
 const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water', 'consumption'] as const;
@@ -58,6 +63,9 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
   imports: [IonCardSubtitle, IonCardTitle, IonCardHeader, IonSkeletonText, 
     CommonModule, IonModal, PuzzleModalPage, WeeklyQuizModalComponent,
     EditProfileModalComponent,
+    PrivacyConsentModalComponent,
+    ProductsModalComponent,
+    CartModalComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
     IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
@@ -69,6 +77,9 @@ export class ClientPage {
   puzzleOpen = false;
   quizOpen = false;
   editProfileOpen = false;
+  privacyOpen = false;
+  productsOpen = false;
+  cartOpen = false;
   profile = {
     fullName: 'Felipe Torres',
     avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
@@ -97,7 +108,7 @@ export class ClientPage {
   
   constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
     private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService,
-    private walletSvc: WalletService) { }
+    private walletSvc: WalletService, private cartSvc: CartService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -220,7 +231,15 @@ export class ClientPage {
   openNotifications() { console.log('Notificaciones'); }
   openPromos() { console.log('Promociones'); }
   findFriends() { console.log('Buscar amigos'); }
-  findSustainableProducts() { console.log('Buscar productos sostenibles'); }
+  findSustainableProducts() { this.productsOpen = true; }
+  closeProducts() { this.productsOpen = false; }
+  openCart() { this.cartOpen = true; }
+  closeCart() { this.cartOpen = false; }
+  cartCount() { return this.cartSvc.getCount(); }
+  logout() {
+    this.auth.logout();
+    this.router.navigateByUrl('/', { replaceUrl: true });
+  }
   dimensions = DIMENSIONS;
   
   
@@ -233,6 +252,8 @@ export class ClientPage {
     promos: pricetagsOutline,
     friends: peopleOutline,
     sustainable: leafOutline,
+    cart: cartOutline,
+    logout: logOutOutline,
   };
 
   editProfile() { this.editProfileOpen = true; }
@@ -240,7 +261,8 @@ export class ClientPage {
     this.editProfileOpen = false;
     this.loadProfile();
   }
-  configGroup() { console.log('Config grupo'); }
+  configGroup() { this.privacyOpen = true; }
+  closePrivacy() { this.privacyOpen = false; }
 
 
 

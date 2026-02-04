@@ -1,0 +1,97 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top" style="background: #202a4fd4 !important; color: white !important;">
+      <ion-toolbar>
+        <ion-title style="color: white !important;">Registro</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass appear heroCard anim-in">
+        <ion-card-content>
+          <div class="title">Crea tu cuenta</div>
+          <div class="muted">Completa tus datos para registrarte.</div>
+
+          <ion-item class="itemGlass custom">
+            <ion-label position="stacked">Nombre completo</ion-label>
+            <ion-input [(ngModel)]="form.fullName" placeholder="Nombre completo"></ion-input>
+          </ion-item>
+
+          <ion-item class="itemGlass custom">
+            <ion-label position="stacked">Usuario</ion-label>
+            <ion-input [(ngModel)]="form.username" placeholder="Usuario"></ion-input>
+          </ion-item>
+
+          <ion-item class="itemGlass custom">
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input
+              [(ngModel)]="form.email"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false">
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="itemGlass custom">
+            <ion-label position="stacked">Contrasena</ion-label>
+            <ion-input
+              [(ngModel)]="form.password"
+              type="password"
+              placeholder="Minimo 6 caracteres"
+              autocomplete="new-password"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false">
+            </ion-input>
+          </ion-item>
+
+          <div class="sectionTitle">Politicas y seguridad</div>
+          <div class="legal">
+            <p>
+              En cumplimiento de la Ley Organica de Proteccion de Datos Personales del Ecuador,
+              tratamos tu informacion de forma segura y con finalidades legitimas del servicio.
+            </p>
+            <p>
+              Opciones de seguridad: puedes configurar la visibilidad de tu perfil, decidir si tu email
+              es visible para busqueda y restringir quien puede enviarte solicitudes. Estas opciones se
+              modifican en la pagina de perfil cuando desees mayor privacidad.
+            </p>
+            <p>
+              En caso de cierre de cuenta, tus datos se conservaran el tiempo X establecido por la normativa
+              aplicable y luego seran eliminados de forma fisica y segura.
+            </p>
+          </div>
+
+          <ion-item class="itemGlass custom">
+            <ion-checkbox slot="start" [(ngModel)]="accepted"></ion-checkbox>
+            <ion-label>Acepto las politicas de privacidad y seguridad</ion-label>
+          </ion-item>
+
+          <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+          <div class="actions">
+            <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+            <ion-button class="primary" (click)="submit()" [disabled]="!canSubmit()">
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">Registrar</span>
+              <ion-icon *ngIf="!loading" slot="end" [icon]="icons.save"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

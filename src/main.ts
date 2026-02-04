@@ -24,7 +24,12 @@ import {
   chevronForwardOutline,
   sendOutline,
   trophyOutline,
-  personAddOutline
+  personAddOutline,
+  logOutOutline,
+  addOutline,
+  removeOutline,
+  searchOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 
@@ -44,7 +49,12 @@ addIcons({
   chevronForwardOutline,
   sendOutline,
   trophyOutline,
-  personAddOutline
+  personAddOutline,
+  logOutOutline,
+  addOutline,
+  removeOutline,
+  searchOutline,
+  checkmarkOutline
 });
 
 

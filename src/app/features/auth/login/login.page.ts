@@ -7,6 +7,7 @@ import {
   AnimationController, ToastController, Platform, IonHeader, IonToolbar, IonTitle } from '@ionic/angular/standalone';
 
 import { AuthService } from 'src/app/core/services/auth';
+import { RegisterModalComponent } from '../register-modal/register-modal.component';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ import { AuthService } from 'src/app/core/services/auth';
   imports: [IonTitle, IonToolbar, IonHeader,
     CommonModule,
     ReactiveFormsModule,
+    RegisterModalComponent,
     IonContent, IonCard, IonCardContent, IonItem, IonInput, IonIcon, IonButton, IonSpinner
   ],
 })
@@ -25,6 +27,7 @@ export class LoginPage implements AfterViewInit {
 
   loading = false;
   showPass = false;
+  registerOpen = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -133,6 +136,10 @@ export class LoginPage implements AfterViewInit {
   }
 
   goRegister(){
-    this.router.navigateByUrl('/', { replaceUrl: true });
+    this.registerOpen = true;
+  }
+
+  closeRegister() {
+    this.registerOpen = false;
   }
 }

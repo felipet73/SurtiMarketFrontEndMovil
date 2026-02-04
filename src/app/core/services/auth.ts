@@ -74,6 +74,18 @@ export class AuthService {
     return res;
   }
 
+  async register(payload: {
+    fullName: string;
+    username: string;
+    email: string;
+    password: string;
+  }) {
+    const res = await firstValueFrom(
+      this.api.post<UserResponse>('/auth/register', payload)
+    );
+    return res;
+  }
+
   async updateProfile(payload: {
     fullName: string;
     username: string;

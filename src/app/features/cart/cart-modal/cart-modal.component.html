@@ -1,0 +1,93 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Tu carrito</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass heroCard anim-in" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass appear" *ngIf="!loading">
+        <ion-card-content>
+          <div class="title">Productos seleccionados</div>
+          <ion-list class="listGlass" inset="false" *ngIf="items.length; else emptyTpl">
+            <ion-item class="itemGlass" *ngFor="let i of items">
+              <ion-label>
+                <h3>{{ i.product.name }}</h3>
+                <p class="muted">{{ i.product.brand }} · {{ i.product.category }}</p>
+              </ion-label>
+              <div slot="end" class="priceCol">
+                <div class="qtyRow">
+                  <ion-button class="qtyBtn" size="small" fill="clear" (click)="dec(i)">
+                    <ion-icon slot="icon-only" [icon]="icons.remove"></ion-icon>
+                  </ion-button>
+                  <div class="qty">x{{ i.qty }}</div>
+                  <ion-button class="qtyBtn" size="small" fill="clear" (click)="inc(i)">
+                    <ion-icon slot="icon-only" [icon]="icons.add"></ion-icon>
+                  </ion-button>
+                </div>
+                <div class="price">${{ priceOf(i) }}</div>
+                <ion-button size="small" fill="clear" color="danger" (click)="removeAll(i)">
+                  <ion-icon [icon]="icons.trash"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-list>
+          <ng-template #emptyTpl>
+            <div class="muted">No tienes productos en el carrito.</div>
+          </ng-template>
+
+          <div class="totals" *ngIf="items.length">
+            <div class="row">
+              <span>Subtotal</span>
+              <b>${{ subtotal | number:'1.2-2' }}</b>
+            </div>
+            <div class="row">
+              <span>Impuesto (12%)</span>
+              <b>${{ tax | number:'1.2-2' }}</b>
+            </div>
+            <div class="row">
+              <span>Canje ecopoints ({{ ecoCoinsBalance }} * 0.025)</span>
+              <b>- ${{ ecoDiscount | number:'1.2-2' }}</b>
+            </div>
+            <div class="row total">
+              <span>Total</span>
+              <b>${{ total | number:'1.2-2' }}</b>
+            </div>
+          </div>
+
+          <div *ngIf="items.length" class="actions">
+            <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+            <ion-button class="primary" (click)="confirm()" [disabled]="submitting">
+              <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
+              <span *ngIf="!submitting">Confirmar compra</span>
+              <ion-icon *ngIf="!submitting" slot="end" [icon]="icons.ok"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
