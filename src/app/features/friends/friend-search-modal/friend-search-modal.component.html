@@ -1,0 +1,91 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Buscar amigos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass searchCard">
+        <ion-card-content>
+          <div class="searchRow">
+            <ion-icon [icon]="icons.search"></ion-icon>
+            <ion-input
+              [(ngModel)]="query"
+              placeholder="Buscar por nombre o usuario"
+              (keyup.enter)="search()"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false">
+            </ion-input>
+            <ion-button size="small" class="searchBtn" (click)="search()">Buscar</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass heroCard anim-in" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass appear" *ngIf="!loading && !errorMessage">
+        <ion-card-content>
+          <ion-list class="listGlass" inset="false">
+            <ion-item class="itemGlass" *ngFor="let u of results">
+              <ion-avatar slot="start" class="avatar">
+                <img *ngIf="u.avatarUrl; else initialsTpl" [src]="u.avatarUrl" />
+                <ng-template #initialsTpl>
+                  <div class="initials">{{ initials(u) }}</div>
+                </ng-template>
+              </ion-avatar>
+
+              <ion-label>
+                <h3>{{ displayName(u) }}</h3>
+                <p class="muted">{{ u.emailMasked }}</p>
+              </ion-label>
+
+              <ion-button
+                *ngIf="!isFriend(u.id)"
+                slot="end"
+                class="primary"
+                [disabled]="requestedIds.has(u.id)"
+                (click)="invite(u)">
+                <ion-icon slot="start" [icon]="icons.add"></ion-icon>
+                {{ requestedIds.has(u.id) ? 'Solicitado' : 'Invitar' }}
+              </ion-button>
+
+              <ion-button *ngIf="isFriend(u.id)" slot="end" fill="outline" disabled>
+                <ion-icon slot="start" [icon]="icons.ok"></ion-icon>
+                Amigo
+              </ion-button>
+            </ion-item>
+          </ion-list>
+
+          <div class="muted" *ngIf="!results.length">Escribe un texto y busca usuarios.</div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="actions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

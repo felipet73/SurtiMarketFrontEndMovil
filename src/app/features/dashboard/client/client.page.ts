@@ -12,6 +12,7 @@ import { EditProfileModalComponent } from '../../profile/edit-profile-modal/edit
 import { PrivacyConsentModalComponent } from '../../privacy/privacy-consent-modal/privacy-consent-modal.component';
 import { ProductsModalComponent } from '../../products/products-modal/products-modal.component';
 import { CartModalComponent } from '../../cart/cart-modal/cart-modal.component';
+import { FriendSearchModalComponent } from '../../friends/friend-search-modal/friend-search-modal.component';
 
 import { DashboardService } from '../../../core/services/dashboard';
 
@@ -66,6 +67,7 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
     PrivacyConsentModalComponent,
     ProductsModalComponent,
     CartModalComponent,
+    FriendSearchModalComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
     IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
@@ -80,6 +82,7 @@ export class ClientPage {
   privacyOpen = false;
   productsOpen = false;
   cartOpen = false;
+  friendSearchOpen = false;
   profile = {
     fullName: 'Felipe Torres',
     avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
@@ -230,7 +233,17 @@ export class ClientPage {
   // --- Header icon actions (por ahora console, luego rutas/servicios)
   openNotifications() { console.log('Notificaciones'); }
   openPromos() { console.log('Promociones'); }
-  findFriends() { console.log('Buscar amigos'); }
+  findFriends() { this.friendSearchOpen = true; }
+  closeFriendSearch() {
+    this.friendSearchOpen = false;
+    this.loadFriends();
+  }
+
+  friendIds() {
+    return this.friendsMe?.friends
+      ?.map(f => f.user?.id)
+      .filter((id): id is string => !!id) ?? [];
+  }
   findSustainableProducts() { this.productsOpen = true; }
   closeProducts() { this.productsOpen = false; }
   openCart() { this.cartOpen = true; }

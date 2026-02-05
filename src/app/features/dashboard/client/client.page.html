@@ -244,7 +244,7 @@
           <div class="memberName">{{ m.name }}</div>
         </div>
       </div> -->
-      <ion-button expand="block" fill="outline">invitar amigos</ion-button>
+      <ion-button expand="block" fill="outline" (click)="findFriends()">invitar amigos</ion-button>
     </ion-card-content>
   </ion-card>
 
@@ -608,3 +608,11 @@
   (closed)="closeCart()"
   (purchased)="loadWallet()">
 </app-cart-modal>
+
+<app-friend-search-modal
+  *ngIf="friendSearchOpen"
+  [open]="friendSearchOpen"
+  [friendIds]="friendIds()"
+  (closed)="closeFriendSearch()"
+  (invited)="loadFriends()">
+</app-friend-search-modal>

@@ -46,11 +46,12 @@
         <ion-card-content>
           <ion-list class="listGlass" inset="false">
             <ion-item class="itemGlass" *ngFor="let p of filteredItems">
-              <ion-thumbnail slot="start" class="thumb" *ngIf="p.images?.length">
-                <img [src]="p.images[0]" alt="Producto" />
-              </ion-thumbnail>
-
               <ion-label>
+                <div class="imgRow" *ngIf="p.images?.length">
+                  <div class="imgWrap" *ngFor="let img of p.images | slice:0:3">
+                    <img [src]="img" alt="Producto" />
+                  </div>
+                </div>
                 <h3>{{ p.name }}</h3>
                 <p class="muted">{{ p.brand }} · {{ p.category }}</p>
                 <p>{{ p.description }}</p>

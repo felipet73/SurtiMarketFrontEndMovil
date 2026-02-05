@@ -10,4 +10,13 @@ export class FriendsService {
   getMe(): Promise<FriendsMeDto> {
     return firstValueFrom(this.api.get<FriendsMeDto>('/friends/me'));
   }
+
+  searchUsers(query: string) {
+    const q = encodeURIComponent(query);
+    return firstValueFrom(this.api.get<any[]>(`/community/users/search?q=${q}`));
+  }
+
+  requestFriend(targetUserId: string) {
+    return firstValueFrom(this.api.post('/friends/request', { targetUserId }));
+  }
 }
