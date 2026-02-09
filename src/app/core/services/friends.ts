@@ -11,9 +11,10 @@ export class FriendsService {
     return firstValueFrom(this.api.get<FriendsMeDto>('/friends/me'));
   }
 
-  searchUsers(query: string) {
-    const q = encodeURIComponent(query);
-    return firstValueFrom(this.api.get<any[]>(`/community/users/search?q=${q}`));
+  searchUsers(query?: string) {
+    const q = (query ?? '').trim();
+    const url = q ? `/community/users/search?q=${encodeURIComponent(q)}` : '/community/users/search';
+    return firstValueFrom(this.api.get<any[]>(url));
   }
 
   requestFriend(targetUserId: string) {

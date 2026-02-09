@@ -7,7 +7,7 @@
   <ng-template>
     <ion-header class="top">
       <ion-toolbar>
-        <ion-title>Buscar amigos</ion-title>
+        <ion-title>Invitar al grupo</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="close()">
             <ion-icon [icon]="icons.close"></ion-icon>
@@ -61,18 +61,18 @@
               </ion-label>
 
               <ion-button
-                *ngIf="!isFriend(u.id)"
+                *ngIf="!isMember(u.id)"
                 slot="end"
                 class="primary"
-                [disabled]="requestedIds.has(u.id)"
+                [disabled]="invitedIds.has(u.id) || !groupId"
                 (click)="invite(u)">
                 <ion-icon slot="start" [icon]="icons.add"></ion-icon>
-                {{ requestedIds.has(u.id) ? 'Solicitado' : 'Invitar' }}
+                {{ invitedIds.has(u.id) ? 'Invitado' : 'Invitar' }}
               </ion-button>
 
-              <ion-button *ngIf="isFriend(u.id)" slot="end" fill="outline" disabled>
+              <ion-button *ngIf="isMember(u.id)" slot="end" fill="outline" disabled>
                 <ion-icon slot="start" [icon]="icons.ok"></ion-icon>
-                Amigo
+                Miembro
               </ion-button>
             </ion-item>
           </ion-list>

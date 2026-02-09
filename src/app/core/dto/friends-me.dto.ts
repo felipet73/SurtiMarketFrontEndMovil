@@ -2,6 +2,7 @@ export interface FriendUserDto {
   id: string;
   displayName: string;
   username?: string | null;
+  fullName?: string | null;
   avatarUrl?: string | null;
 }
 

@@ -1,0 +1,58 @@
+<ion-card class="glass appear" *ngIf="inGroup; else noGroupTpl">
+  <ion-card-content>
+    <div class="cardTitle">
+      <div class="titleLeft">
+        <h2>Avance Semanal</h2>
+        <p class="muted">Score diario del grupo</p>
+      </div>
+      <ion-chip class="tag" *ngIf="data">Semana {{ data.weekKey }}</ion-chip>
+    </div>
+
+    <ion-card class="glass heroCard anim-in" *ngIf="loading">
+      <ion-card-content class="center">
+        <ion-spinner name="crescent"></ion-spinner>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass" *ngIf="!loading && error">
+      <ion-card-content class="error">
+        {{ error }}
+        <ion-button size="small" fill="outline" (click)="onRetry()">
+          <ion-icon slot="start" [icon]="icons.retry"></ion-icon>
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ng-container *ngIf="!loading && !error && data">
+      <div class="lineWrap anim-in">
+        <canvas baseChart [data]="lineData" [options]="lineOptions" [type]="'line'"></canvas>
+      </div>
+
+      <div class="rankChips" *ngIf="data.rankSeries?.length">
+        <div class="rankChip" *ngFor="let r of data.rankSeries">
+          <div class="rankDate">{{ r.dateKey }}</div>
+          <div class="rankVal">#{{ r.rank }}</div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="muted" *ngIf="!loading && !error && !data">
+      No hay información de avance disponible.
+    </div>
+  </ion-card-content>
+</ion-card>
+
+<ng-template #noGroupTpl>
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Avance Semanal</h2>
+          <p class="muted">Únete a un grupo para ver el avance</p>
+        </div>
+      </div>
+      <div class="muted">Busca o crea un grupo para activar este seguimiento.</div>
+    </ion-card-content>
+  </ion-card>
+</ng-template>

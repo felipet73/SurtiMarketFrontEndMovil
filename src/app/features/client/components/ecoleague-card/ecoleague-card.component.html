@@ -1,0 +1,76 @@
+<ion-card class="glass appear" *ngIf="inGroup; else noGroupTpl">
+  <ion-card-content>
+    <div class="cardTitle">
+      <div class="titleLeft">
+        <h2>EcoLiga Semanal</h2>
+        <p class="muted">Ranking de grupos</p>
+      </div>
+      <ion-chip class="tag" *ngIf="data">Top 5</ion-chip>
+    </div>
+
+    <ion-card class="glass heroCard anim-in" *ngIf="loading">
+      <ion-card-content class="center">
+        <ion-spinner name="crescent"></ion-spinner>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass" *ngIf="!loading && error">
+      <ion-card-content class="error">
+        {{ error }}
+        <ion-button size="small" fill="outline" (click)="onRetry()">
+          <ion-icon slot="start" [icon]="icons.retry"></ion-icon>
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ng-container *ngIf="!loading && !error && data">
+      <div class="myRank">
+        <div class="rankNum">#{{ data.myGroup?.rank ?? '-' }}</div>
+        <div class="rankInfo">
+          <div class="rankLabel">Mi puesto</div>
+          <div class="rankScore">{{ data.myGroup?.score ?? 0 }} pts</div>
+        </div>
+      </div>
+
+      <div class="leaders" *ngIf="data.leaders?.length">
+        <div class="leader" *ngFor="let l of data.leaders">
+          <div class="leaderRank">#{{ l.rank }}</div>
+          <div class="leaderName">{{ l.name }}</div>
+          <div class="leaderScore">{{ l.score }}</div>
+          <div class="leaderDelta" [class.up]="l.deltaRank > 0" [class.down]="l.deltaRank < 0">
+            <span *ngIf="l.deltaRank > 0">↑ {{ l.deltaRank }}</span>
+            <span *ngIf="l.deltaRank < 0">↓ {{ (l.deltaRank * -1) }}</span>
+            <span *ngIf="l.deltaRank === 0">• 0</span>
+          </div>
+        </div>
+      </div>
+      <div class="muted" *ngIf="!data.leaders?.length">Sin líderes por ahora.</div>
+
+      <div class="actionsRow">
+        <ion-button size="small" fill="outline" (click)="openFullTable()">
+          Ver tabla completa
+          <ion-icon slot="end" [icon]="icons.next"></ion-icon>
+        </ion-button>
+      </div>
+    </ng-container>
+
+    <div class="muted" *ngIf="!loading && !error && !data">
+      No hay información de EcoLiga disponible.
+    </div>
+  </ion-card-content>
+</ion-card>
+
+<ng-template #noGroupTpl>
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>EcoLiga Semanal</h2>
+          <p class="muted">Únete a un grupo para ver tu ranking</p>
+        </div>
+      </div>
+      <div class="muted">Busca o crea un grupo para activar esta competencia.</div>
+    </ion-card-content>
+  </ion-card>
+</ng-template>

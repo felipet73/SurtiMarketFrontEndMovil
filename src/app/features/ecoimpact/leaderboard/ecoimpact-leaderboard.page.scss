@@ -1,0 +1,80 @@
+/* Estilo glass consistente con dashboard */
+.page {
+  --background: radial-gradient(circle at 20% 15%, rgba(109,255,182,0.14), transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(0,170,255,0.12), transparent 42%),
+                linear-gradient(180deg, #0b1220 0%, #070b14 100%);
+}
+
+.top ion-toolbar {
+  --background: rgba(10, 16, 28, 0.65);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+}
+
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.40);
+}
+
+.listGlass {
+  background: rgba(255,255,255,0.03);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.itemGlass {
+  --background: transparent;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.itemGlass.myGroup {
+  border: 1px solid rgba(109,255,182,0.5);
+  background: rgba(109,255,182,0.08);
+}
+.row {
+  display: grid;
+  grid-template-columns: 48px 1fr 70px 70px;
+  gap: 8px;
+  align-items: center;
+}
+.rank { font-weight: 900; color: rgba(255,255,255,0.9); }
+.name { color: rgba(255,255,255,0.88); font-weight: 700; }
+.score { text-align: right; color: rgba(255,255,255,0.8); font-weight: 800; }
+.delta { display: inline-flex; gap: 4px; align-items: center; justify-content: flex-end; color: rgba(255,255,255,0.7); }
+.delta.up { color: rgba(109,255,182,0.95); }
+.delta.down { color: #ff8a8a; }
+.delta.flat { color: rgba(255,255,255,0.7); }
+
+.actionsBottom {
+  margin: 0 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  color: #ff8a8a;
+  font-weight: 800;
+  display: grid;
+  gap: 8px;
+}
+
+.center { display: grid; justify-items: center; gap: 12px; padding: 18px; }
+.muted { color: rgba(255,255,255,0.7); }
+
+.appear { animation: pop 520ms ease-out both; }
+@keyframes pop { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+.anim-in { animation: fadeUp 520ms cubic-bezier(.2,.9,.2,1) both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px) scale(.99); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

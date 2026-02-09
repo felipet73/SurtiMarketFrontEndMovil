@@ -1,0 +1,76 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Notificaciones</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass heroCard anim-in" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass appear" *ngIf="!loading">
+        <ion-card-content>
+          <div class="title">
+            <ion-icon [icon]="icons.bell"></ion-icon>
+            Notificaciones ({{ unreadCount() }} sin leer)
+          </div>
+
+          <ion-list class="listGlass" inset="false">
+            <ion-item class="itemGlass" *ngFor="let n of items">
+              <ion-label>
+                <div class="rowTop">
+                  <div class="type">
+                    <ion-icon [icon]="n.type === 'FRIEND_REQUEST' ? icons.friend : icons.bell"></ion-icon>
+                    {{ n.type }}
+                  </div>
+                  <ion-badge [color]="n.status === 'UNREAD' ? 'danger' : 'medium'">{{ n.status }}</ion-badge>
+                </div>
+                <h3>{{ n.title }}</h3>
+                <p>{{ n.body }}</p>
+                <div class="muted small">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+              </ion-label>
+
+              <div class="actions" slot="end" *ngIf="canRespond(n)">
+                <ion-button size="small" color="success" (click)="accept(n)">
+                  <ion-icon slot="start" [icon]="icons.accept"></ion-icon>
+                  {{ isGroupInvite(n) ? 'Aceptar invitación' : 'Aceptar' }}
+                </ion-button>
+                <ion-button *ngIf="isFriendRequest(n)" size="small" color="danger" fill="outline" (click)="reject(n)">
+                  <ion-icon slot="start" [icon]="icons.reject"></ion-icon>
+                  Rechazar
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-list>
+
+          <div class="muted" *ngIf="!items.length">No tienes notificaciones.</div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="actionsBottom">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

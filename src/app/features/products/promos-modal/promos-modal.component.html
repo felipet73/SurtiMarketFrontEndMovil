@@ -1,0 +1,101 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Promociones sostenibles</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass searchCard">
+        <ion-card-content>
+          <div class="searchRow">
+            <ion-icon [icon]="icons.search"></ion-icon>
+            <ion-input
+              [(ngModel)]="query"
+              placeholder="Buscar por nombre o descripcion"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false">
+            </ion-input>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass heroCard anim-in" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass appear" *ngIf="!loading && !errorMessage">
+        <ion-card-content>
+          <ion-list class="listGlass" inset="false">
+            <ion-item class="itemGlass" *ngFor="let p of filteredItems" (click)="addToCart(p)">
+              <ion-label>
+                <div class="imgRow" *ngIf="p.images?.length">
+                  <div class="imgWrap" *ngFor="let img of p.images | slice:0:3">
+                    <img [src]="img" alt="Producto" />
+                  </div>
+                </div>
+                <h3>{{ p.name }}</h3>
+                <p class="muted">{{ p.brand }} · {{ p.category }}</p>
+                <p>{{ p.description }}</p>
+                <div class="meta">
+                  <span>Stock: {{ p.stock }}</span>
+                  <span>EcoScore: {{ p.ecoScore }}</span>
+                </div>
+                <div class="badges" *ngIf="p.badges?.length">
+                  <ion-badge *ngFor="let b of p.badges">{{ b }}</ion-badge>
+                </div>
+              </ion-label>
+
+              <div class="priceCol" slot="end">
+                <div class="price strike">${{ p.basePrice }}</div>
+                <div class="promo">
+                  <ion-badge color="success">Promo</ion-badge>
+                  <div class="promoPrice">${{ p.promo?.promoPrice }}</div>
+                </div>
+
+                <div class="qtyRow">
+                  <ion-button class="qtyBtn" size="small" fill="clear" (click)="$event.stopPropagation(); dec(p)">
+                    <ion-icon slot="icon-only" [icon]="icons.remove"></ion-icon>
+                  </ion-button>
+                  <div class="qty">{{ qtyOf(p) }}</div>
+                  <ion-button class="qtyBtn" size="small" fill="clear" (click)="$event.stopPropagation(); inc(p)">
+                    <ion-icon slot="icon-only" [icon]="icons.add"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <ion-button size="small" class="addBtn" (click)="$event.stopPropagation(); addToCart(p)">
+                  <ion-icon slot="start" [icon]="icons.cart"></ion-icon>
+                  Agregar
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="actions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

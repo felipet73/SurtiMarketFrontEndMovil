@@ -52,4 +52,10 @@ export const routes: Routes = [
     path: 'puzzle-modal',
     loadComponent: () => import('./pages/puzzle-modal/puzzle-modal.page').then( m => m.PuzzleModalPage)
   },
+  {
+    path: 'ecoimpact/leaderboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/ecoimpact/leaderboard/ecoimpact-leaderboard.page').then(m => m.EcoImpactLeaderboardPage),
+  },
 ];

@@ -7,7 +7,7 @@
   <ng-template>
     <ion-header class="top">
       <ion-toolbar>
-        <ion-title>Buscar amigos</ion-title>
+        <ion-title>Buscar grupos</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="close()">
             <ion-icon [icon]="icons.close"></ion-icon>
@@ -23,7 +23,7 @@
             <ion-icon [icon]="icons.search"></ion-icon>
             <ion-input
               [(ngModel)]="query"
-              placeholder="Buscar por nombre o usuario"
+              placeholder="Buscar por nombre"
               (keyup.enter)="search()"
               autocorrect="off"
               autocapitalize="off"
@@ -47,37 +47,31 @@
       <ion-card class="glass appear" *ngIf="!loading && !errorMessage">
         <ion-card-content>
           <ion-list class="listGlass" inset="false">
-            <ion-item class="itemGlass" *ngFor="let u of results">
-              <ion-avatar slot="start" class="avatar">
-                <img *ngIf="u.avatarUrl; else initialsTpl" [src]="u.avatarUrl" />
-                <ng-template #initialsTpl>
-                  <div class="initials">{{ initials(u) }}</div>
-                </ng-template>
-              </ion-avatar>
-
+            <ion-item class="itemGlass" *ngFor="let g of results">
               <ion-label>
-                <h3>{{ displayName(u) }}</h3>
-                <p class="muted">{{ u.emailMasked }}</p>
+                <h3>{{ g.name }}</h3>
+                <p class="muted">{{ g.description || 'Grupo comunitario' }}</p>
+                <div class="tags">
+                  <ion-chip class="tag" *ngIf="g.memberCount !== null && g.memberCount !== undefined">
+                    {{ g.memberCount }} miembros
+                  </ion-chip>
+                  <ion-chip class="tag" *ngIf="g.joinPolicy">{{ g.joinPolicy }}</ion-chip>
+                  <ion-chip class="tag" *ngIf="g.visibility">{{ g.visibility }}</ion-chip>
+                </div>
               </ion-label>
 
               <ion-button
-                *ngIf="!isFriend(u.id)"
                 slot="end"
                 class="primary"
-                [disabled]="requestedIds.has(u.id)"
-                (click)="invite(u)">
+                [disabled]="requestedIds.has(g.id)"
+                (click)="requestJoin(g)">
                 <ion-icon slot="start" [icon]="icons.add"></ion-icon>
-                {{ requestedIds.has(u.id) ? 'Solicitado' : 'Invitar' }}
-              </ion-button>
-
-              <ion-button *ngIf="isFriend(u.id)" slot="end" fill="outline" disabled>
-                <ion-icon slot="start" [icon]="icons.ok"></ion-icon>
-                Amigo
+                {{ requestedIds.has(g.id) ? 'Solicitado' : 'Solicitar unirse' }}
               </ion-button>
             </ion-item>
           </ion-list>
 
-          <div class="muted" *ngIf="!results.length">No hay usuarios para mostrar.</div>
+          <div class="muted" *ngIf="!results.length">No hay grupos para mostrar.</div>
         </ion-card-content>
       </ion-card>
 

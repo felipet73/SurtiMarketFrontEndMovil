@@ -13,6 +13,14 @@ import { PrivacyConsentModalComponent } from '../../privacy/privacy-consent-moda
 import { ProductsModalComponent } from '../../products/products-modal/products-modal.component';
 import { CartModalComponent } from '../../cart/cart-modal/cart-modal.component';
 import { FriendSearchModalComponent } from '../../friends/friend-search-modal/friend-search-modal.component';
+import { PromosModalComponent } from '../../products/promos-modal/promos-modal.component';
+import { NotificationsModalComponent } from '../../notifications/notifications-modal/notifications-modal.component';
+import { GroupInviteModalComponent } from '../../groups/group-invite-modal/group-invite-modal.component';
+import { GroupSearchModalComponent } from '../../groups/group-search-modal/group-search-modal.component';
+import { GroupCreateModalComponent } from '../../groups/group-create-modal/group-create-modal.component';
+import { EcoImpactCardComponent } from '../../client/components/ecoimpact-card/ecoimpact-card.component';
+import { EcoLeagueCardComponent } from '../../client/components/ecoleague-card/ecoleague-card.component';
+import { EcoProgressCardComponent } from '../../client/components/ecoprogress-card/ecoprogress-card.component';
 
 import { DashboardService } from '../../../core/services/dashboard';
 
@@ -21,11 +29,15 @@ import { StreakService, StreakDto, WeekDayItem } from '../../../core/services/st
 type Dimension = 'waste' | 'transport' | 'energy' | 'water' | 'consumption';
 
 import { GroupsService } from '../../../core/services/group';
-import { GroupMeDto } from '../../../core/dto/group-me.dto';
+import { GroupMeDto, GroupJoinRequestDto, MyGroupJoinRequestDto } from '../../../core/dto/group-me.dto';
 
 import { FriendsService } from '../../../core/services/friends';
 import { FriendsMeDto, FriendUserDto } from '../../../core/dto/friends-me.dto';
 import { WalletService, WalletMeDto } from '../../../core/services/wallet';
+import { ProductsService, ProductDto } from 'src/app/core/services/products';
+import { NotificationsService } from 'src/app/core/services/notifications';
+import { EcoImpactService } from 'src/app/core/services/ecoimpact.service';
+import { EcoImpactLeaderboardDto, EcoImpactMeDto, EcoImpactProgressDto } from 'src/app/core/dto/ecoimpact.dto';
 
 import {
   notificationsOutline,
@@ -68,6 +80,14 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
     ProductsModalComponent,
     CartModalComponent,
     FriendSearchModalComponent,
+    PromosModalComponent,
+    NotificationsModalComponent,
+    GroupInviteModalComponent,
+    GroupSearchModalComponent,
+    GroupCreateModalComponent,
+    EcoImpactCardComponent,
+    EcoLeagueCardComponent,
+    EcoProgressCardComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
     IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
@@ -83,6 +103,22 @@ export class ClientPage {
   productsOpen = false;
   cartOpen = false;
   friendSearchOpen = false;
+  promosOpen = false;
+  promoItems: ProductDto[] = [];
+  notificationsOpen = false;
+  notificationsUnread = 0;
+  groupInviteOpen = false;
+  groupSearchOpen = false;
+  groupCreateOpen = false;
+  ecoImpact?: EcoImpactMeDto | null;
+  ecoImpactLoading = false;
+  ecoImpactError = '';
+  ecoLeague?: EcoImpactLeaderboardDto | null;
+  ecoLeagueLoading = false;
+  ecoLeagueError = '';
+  ecoProgress?: EcoImpactProgressDto | null;
+  ecoProgressLoading = false;
+  ecoProgressError = '';
   profile = {
     fullName: 'Felipe Torres',
     avatarUrl: 'https://static.vecteezy.com/system/resources/previews/036/475/917/non_2x/agent-or-spy-icon-incognito-logo-vector.jpg', // si está vacío, Ionic muestra placeholder
@@ -93,15 +129,25 @@ export class ClientPage {
   };
 
   openPuzzle() { this.puzzleOpen = true; }
-  closePuzzle() { this.puzzleOpen = false; }
+  closePuzzle() {
+    this.puzzleOpen = false;
+    this.loadEcoLeague();
+  }
   openWeeklyQuiz() { this.quizOpen = true; }
-  closeWeeklyQuiz() { this.quizOpen = false; }
+  closeWeeklyQuiz() {
+    this.quizOpen = false;
+    this.loadEcoLeague();
+  }
 
   streak?: StreakDto;
   streakLoading = true;
 
   groupMe?: GroupMeDto;
   groupLoading = true;
+  groupMemberIds: string[] = [];
+  joinRequests: GroupJoinRequestDto[] = [];
+  joinRequestsLoading = false;
+  myJoinRequests: MyGroupJoinRequestDto[] = [];
 
   friendsMe?: FriendsMeDto;
   friendsLoading = true;
@@ -111,7 +157,8 @@ export class ClientPage {
   
   constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
     private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService,
-    private walletSvc: WalletService, private cartSvc: CartService) { }
+    private walletSvc: WalletService, private cartSvc: CartService, private productsSvc: ProductsService,
+    private notificationsSvc: NotificationsService, private ecoimpactSvc: EcoImpactService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -161,6 +208,13 @@ export class ClientPage {
     this.loadGroup();
     this.loadFriends();
     this.loadWallet();
+    this.loadPromos();
+    this.loadNotificationsCount();
+    await Promise.all([
+      this.loadEcoImpact(),
+      this.loadEcoLeague(),
+      this.loadEcoProgress(),
+    ]);
 
   }
 
@@ -190,8 +244,54 @@ export class ClientPage {
     this.groupLoading = true;
     try {
       this.groupMe = await this.groups.getMe();
+      this.groupMemberIds = this.groupMe?.members
+        ?.map(m => m.user?.id)
+        .filter((id): id is string => !!id) ?? [];
+      const groupId = this.groupMe?.group?.id;
+      if (groupId && this.groupMe?.membership?.role === 'OWNER') {
+        await this.loadJoinRequests(groupId);
+      } else {
+        this.joinRequests = [];
+      }
+      if (!this.groupMe?.inGroup) {
+        await this.loadMyJoinRequests();
+      } else {
+        this.myJoinRequests = [];
+      }
     } finally {
       this.groupLoading = false;
+    }
+  }
+
+  async loadJoinRequests(groupId: string) {
+    this.joinRequestsLoading = true;
+    try {
+      this.joinRequests = await this.groups.getJoinRequests(groupId);
+    } catch (e) {
+      console.error('Join requests load error', e);
+      this.joinRequests = [];
+    } finally {
+      this.joinRequestsLoading = false;
+    }
+  }
+
+  async acceptJoinRequest(userId?: string | null) {
+    const groupId = this.groupMe?.group?.id;
+    if (!groupId || !userId) return;
+    try {
+      await this.groups.acceptJoinRequest(groupId, userId);
+      await this.loadGroup();
+    } catch (e) {
+      console.error('Accept join request error', e);
+    }
+  }
+
+  async loadMyJoinRequests() {
+    try {
+      this.myJoinRequests = await this.groups.getMyJoinRequests();
+    } catch (e) {
+      console.error('My join requests load error', e);
+      this.myJoinRequests = [];
     }
   }
 
@@ -220,6 +320,48 @@ export class ClientPage {
     }
   }
 
+  async loadEcoImpact() {
+    this.ecoImpactLoading = true;
+    this.ecoImpactError = '';
+    try {
+      this.ecoImpact = await this.ecoimpactSvc.getMe();
+    } catch (e) {
+      console.error('EcoImpact load error', e);
+      this.ecoImpact = null;
+      this.ecoImpactError = 'No fue posible cargar EcoImpact.';
+    } finally {
+      this.ecoImpactLoading = false;
+    }
+  }
+
+  async loadEcoLeague() {
+    this.ecoLeagueLoading = true;
+    this.ecoLeagueError = '';
+    try {
+      this.ecoLeague = await this.ecoimpactSvc.getLeaderboard(1, 5);
+    } catch (e) {
+      console.error('EcoLeague load error', e);
+      this.ecoLeague = null;
+      this.ecoLeagueError = 'No fue posible cargar la EcoLiga.';
+    } finally {
+      this.ecoLeagueLoading = false;
+    }
+  }
+
+  async loadEcoProgress() {
+    this.ecoProgressLoading = true;
+    this.ecoProgressError = '';
+    try {
+      this.ecoProgress = await this.ecoimpactSvc.getProgress();
+    } catch (e) {
+      console.error('EcoProgress load error', e);
+      this.ecoProgress = null;
+      this.ecoProgressError = 'No fue posible cargar el avance.';
+    } finally {
+      this.ecoProgressLoading = false;
+    }
+  }
+
   // helpers UI
   statusClass(d: WeekDayItem) {
     return {
@@ -231,8 +373,15 @@ export class ClientPage {
   }
 
   // --- Header icon actions (por ahora console, luego rutas/servicios)
-  openNotifications() { console.log('Notificaciones'); }
-  openPromos() { console.log('Promociones'); }
+  openNotifications() { this.notificationsOpen = true; }
+  closeNotifications() {
+    this.notificationsOpen = false;
+    this.loadNotificationsCount();
+    this.loadFriends();
+    this.loadGroup();
+  }
+  openPromos() { this.promosOpen = true; }
+  closePromos() { this.promosOpen = false; }
   findFriends() { this.friendSearchOpen = true; }
   closeFriendSearch() {
     this.friendSearchOpen = false;
@@ -243,6 +392,20 @@ export class ClientPage {
     return this.friendsMe?.friends
       ?.map(f => f.user?.id)
       .filter((id): id is string => !!id) ?? [];
+  }
+
+  async loadPromos() {
+    try {
+      const res = await this.productsSvc.getProducts();
+      this.promoItems = (res.items ?? []).filter(p => p.promo?.active).slice(0, 3);
+    } catch (e) {
+      console.error('Promos load error', e);
+      this.promoItems = [];
+    }
+  }
+
+  addPromoToCart(p: ProductDto) {
+    this.cartSvc.add(p, 1);
   }
   findSustainableProducts() { this.productsOpen = true; }
   closeProducts() { this.productsOpen = false; }
@@ -276,6 +439,32 @@ export class ClientPage {
   }
   configGroup() { this.privacyOpen = true; }
   closePrivacy() { this.privacyOpen = false; }
+  updateNotificationsUnread(count: number) { this.notificationsUnread = count; }
+  openGroupInvite() { this.groupInviteOpen = true; }
+  closeGroupInvite() {
+    this.groupInviteOpen = false;
+    this.loadGroup();
+  }
+  openGroupSearch() { this.groupSearchOpen = true; }
+  closeGroupSearch() {
+    this.groupSearchOpen = false;
+    this.loadGroup();
+  }
+  openGroupCreate() { this.groupCreateOpen = true; }
+  closeGroupCreate() {
+    this.groupCreateOpen = false;
+    this.loadGroup();
+  }
+
+  async loadNotificationsCount() {
+    try {
+      const res = await this.notificationsSvc.getAll();
+      this.notificationsUnread = res.filter(n => n.status === 'UNREAD').length;
+    } catch (e) {
+      console.error('Notifications count error', e);
+      this.notificationsUnread = 0;
+    }
+  }
 
 
 

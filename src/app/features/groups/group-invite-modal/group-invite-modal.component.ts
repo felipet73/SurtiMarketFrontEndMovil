@@ -9,6 +9,7 @@ import {
 import { closeOutline, searchOutline, personAddOutline, checkmarkOutline } from 'ionicons/icons';
 
 import { FriendsService } from 'src/app/core/services/friends';
+import { GroupsService } from 'src/app/core/services/group';
 
 type ProfileVisibility = 'PUBLIC' | 'COMMUNITY' | 'GROUP_ONLY' | 'PRIVATE' | string;
 
@@ -19,14 +20,13 @@ interface CommunityUser {
   avatarUrl?: string | null;
   emailMasked: string;
   profileVisibility: ProfileVisibility;
-  canRequestFriend: boolean;
 }
 
 @Component({
   standalone: true,
-  selector: 'app-friend-search-modal',
-  templateUrl: './friend-search-modal.component.html',
-  styleUrls: ['./friend-search-modal.component.scss'],
+  selector: 'app-group-invite-modal',
+  templateUrl: './group-invite-modal.component.html',
+  styleUrls: ['./group-invite-modal.component.scss'],
   imports: [
     CommonModule,
     FormsModule,
@@ -35,9 +35,10 @@ interface CommunityUser {
     IonAvatar, IonSpinner
   ],
 })
-export class FriendSearchModalComponent {
+export class GroupInviteModalComponent {
   @Input() open = false;
-  @Input() friendIds: string[] = [];
+  @Input() groupId: string | null = null;
+  @Input() memberIds: string[] = [];
   @Output() closed = new EventEmitter<void>();
   @Output() invited = new EventEmitter<void>();
 
@@ -52,15 +53,15 @@ export class FriendSearchModalComponent {
   errorMessage = '';
   query = '';
   results: CommunityUser[] = [];
-  requestedIds = new Set<string>();
+  invitedIds = new Set<string>();
 
-  constructor(private friends: FriendsService) {}
+  constructor(private friends: FriendsService, private groups: GroupsService) {}
 
   init() {
     this.query = '';
     this.results = [];
     this.errorMessage = '';
-    this.requestedIds = new Set<string>();
+    this.invitedIds = new Set<string>();
     this.loadAll();
   }
 
@@ -68,8 +69,8 @@ export class FriendSearchModalComponent {
     this.closed.emit();
   }
 
-  isFriend(id: string) {
-    return this.friendIds?.includes(id);
+  isMember(id: string) {
+    return this.memberIds?.includes(id);
   }
 
   displayName(u: CommunityUser) {
@@ -81,11 +82,6 @@ export class FriendSearchModalComponent {
     if (!name) return '?';
     const parts = name.split(/\s+/).slice(0, 2);
     return parts.map(p => p[0]?.toUpperCase()).join('');
-  }
-
-  canShow(u: CommunityUser) {
-    const visible = u.profileVisibility === 'PUBLIC' || u.profileVisibility === 'COMMUNITY';
-    return u.canRequestFriend && visible;
   }
 
   async search() {
@@ -102,9 +98,9 @@ export class FriendSearchModalComponent {
     this.errorMessage = '';
     try {
       const res = await this.friends.searchUsers(q);
-      this.results = (res ?? []).filter(u => this.canShow(u));
+      this.results = res ?? [];
     } catch (e) {
-      console.error('Friend search error', e);
+      console.error('Group invite search error', e);
       this.errorMessage = 'No fue posible buscar usuarios.';
     } finally {
       this.loading = false;
@@ -116,9 +112,9 @@ export class FriendSearchModalComponent {
     this.errorMessage = '';
     try {
       const res = await this.friends.searchUsers();
-      this.results = (res ?? []).filter(u => this.canShow(u));
+      this.results = res ?? [];
     } catch (e) {
-      console.error('Friend search error', e);
+      console.error('Group invite load error', e);
       this.errorMessage = 'No fue posible cargar usuarios.';
     } finally {
       this.loading = false;
@@ -126,14 +122,14 @@ export class FriendSearchModalComponent {
   }
 
   async invite(u: CommunityUser) {
-    if (this.isFriend(u.id) || this.requestedIds.has(u.id)) return;
+    if (!this.groupId || this.isMember(u.id) || this.invitedIds.has(u.id)) return;
     try {
-      await this.friends.requestFriend(u.id);
-      this.requestedIds.add(u.id);
+      await this.groups.inviteUser(this.groupId, u.id);
+      this.invitedIds.add(u.id);
       this.invited.emit();
     } catch (e) {
-      console.error('Invite error', e);
-      this.errorMessage = 'No fue posible enviar la invitacion.';
+      console.error('Group invite error', e);
+      this.errorMessage = 'No fue posible invitar al usuario.';
     }
   }
 }

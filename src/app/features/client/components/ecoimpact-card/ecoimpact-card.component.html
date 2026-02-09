@@ -1,0 +1,72 @@
+<ion-card class="glass appear" *ngIf="inGroup; else noGroupTpl">
+  <ion-card-content>
+    <div class="cardTitle">
+      <div class="titleLeft">
+        <h2>EcoImpact Live</h2>
+        <p class="muted">Competencia de grupos</p>
+      </div>
+      <ion-chip class="tag" *ngIf="data">{{ dimensionLabel(data.focusDimension) }}</ion-chip>
+    </div>
+
+    <ion-card class="glass heroCard anim-in" *ngIf="loading">
+      <ion-card-content class="center">
+        <ion-spinner name="crescent"></ion-spinner>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass" *ngIf="!loading && error">
+      <ion-card-content class="error">
+        {{ error }}
+        <ion-button size="small" fill="outline" (click)="onRetry()">
+          <ion-icon slot="start" [icon]="icons.retry"></ion-icon>
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ng-container *ngIf="!loading && !error && data">
+      <div class="radarWrap anim-in">
+        <canvas baseChart [data]="radarData" [options]="radarOptions" [type]="'radar'"></canvas>
+      </div>
+
+      <div class="summary">
+        {{ data.ai?.summary }}
+      </div>
+
+      <div class="aiCard">
+        <div class="aiHeader">
+          <div class="aiTitle">{{ activeMessage()?.title }}</div>
+          <div class="aiStep">{{ activeIndex + 1 }} / {{ messages().length }}</div>
+        </div>
+        <div class="aiBody">{{ activeMessage()?.text }}</div>
+        <div class="aiCta">{{ activeMessage()?.cta }}</div>
+        <div class="aiNav">
+          <ion-button size="small" fill="outline" (click)="prev()">
+            <ion-icon slot="icon-only" [icon]="icons.prev"></ion-icon>
+          </ion-button>
+          <ion-button size="small" class="primary" (click)="next()">
+            <ion-icon slot="icon-only" [icon]="icons.next"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="muted" *ngIf="!loading && !error && !data">
+      No hay información de EcoImpact disponible.
+    </div>
+  </ion-card-content>
+</ion-card>
+
+<ng-template #noGroupTpl>
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>EcoImpact Live</h2>
+          <p class="muted">Únete a un grupo para competir</p>
+        </div>
+      </div>
+      <div class="muted">Busca o crea un grupo para activar esta competencia.</div>
+    </ion-card-content>
+  </ion-card>
+</ng-template>

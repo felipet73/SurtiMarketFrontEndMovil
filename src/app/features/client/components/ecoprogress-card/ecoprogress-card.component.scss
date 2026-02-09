@@ -1,0 +1,87 @@
+/* Estilo glass consistente con dashboard */
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.40);
+}
+
+.cardTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.cardTitle h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.95);
+}
+.titleLeft .muted {
+  color: rgba(255,255,255,0.68);
+  font-size: 12.5px;
+  margin-top: 4px;
+}
+.tag {
+  opacity: 0.9;
+  border-radius: 999px;
+}
+.muted { color: rgba(255,255,255,0.68); }
+
+.lineWrap {
+  padding: 6px 2px 0;
+  animation: fadeUp 520ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+.rankChips {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.rankChip {
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  display: grid;
+  gap: 2px;
+  text-align: center;
+}
+.rankDate {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+}
+.rankVal {
+  font-weight: 900;
+  color: rgba(255,255,255,0.9);
+}
+
+.error {
+  color: #ff8a8a;
+  font-weight: 800;
+  display: grid;
+  gap: 8px;
+}
+
+.center { display: grid; justify-items: center; gap: 12px; padding: 18px; }
+
+.appear { animation: pop 520ms ease-out both; }
+@keyframes pop { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+.anim-in { animation: fadeUp 520ms cubic-bezier(.2,.9,.2,1) both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px) scale(.99); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

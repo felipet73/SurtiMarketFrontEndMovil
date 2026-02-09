@@ -6,6 +6,7 @@
     <ion-buttons slot="end">
       <ion-button (click)="openNotifications()">
         <ion-icon icon="notifications-outline"></ion-icon>
+        <ion-badge class="notifBadge" *ngIf="notificationsUnread > 0">{{ notificationsUnread }}</ion-badge>
       </ion-button>
       <ion-button (click)="openPromos()">
         <ion-icon icon="pricetags-outline"></ion-icon>
@@ -125,6 +126,30 @@
     </ion-card-content>
   </ion-card>
 
+  <app-ecoimpact-card
+    [data]="ecoImpact || null"
+    [loading]="ecoImpactLoading"
+    [error]="ecoImpactError"
+    [inGroup]="groupMe?.inGroup ?? true"
+    (retry)="loadEcoImpact()">
+  </app-ecoimpact-card>
+
+  <app-ecoleague-card
+    [data]="ecoLeague || null"
+    [loading]="ecoLeagueLoading"
+    [error]="ecoLeagueError"
+    [inGroup]="groupMe?.inGroup ?? true"
+    (retry)="loadEcoLeague()">
+  </app-ecoleague-card>
+
+  <app-ecoprogress-card
+    [data]="ecoProgress || null"
+    [loading]="ecoProgressLoading"
+    [error]="ecoProgressError"
+    [inGroup]="groupMe?.inGroup ?? true"
+    (retry)="loadEcoProgress()">
+  </app-ecoprogress-card>
+
   <!-- 2) Mi Perfil sostenible -->
   <ion-card class="glass appear">
     <ion-card-content>
@@ -186,21 +211,56 @@
       <div class="cardTitle">
         <div class="titleLeft">
           <h2>Mi EcoVecindad</h2>
-          <p class="muted">{{ community.goal }}</p>
+          <p class="muted">{{ groupMe.group.description || 'Miembros del grupo' }}</p>
         </div>
         <ion-chip class="tag">{{ groupMe.group.memberCount }} miembros</ion-chip>
       </div>
 
       <div class="members">
-        <div class="member" *ngFor="let m of community.members">
+        <div class="member" *ngFor="let m of groupMe.members || []">
           <ion-avatar class="memberAvatar">
-            <img *ngIf="m.avatarUrl" [src]="m.avatarUrl" />
+            <img *ngIf="m.user?.avatarUrl" [src]="m.user?.avatarUrl" />
+            <div *ngIf="!m.user?.avatarUrl" class="memberInitials">{{ initials(m.user?.fullName || m.user?.displayName || m.user?.username) }}</div>
           </ion-avatar>
-          <div class="memberName">{{ m.name }}</div>
+          <div class="memberName">{{ m.user?.fullName || m.user?.displayName || m.user?.username }}</div>
         </div>
       </div>
+      <ion-button
+        *ngIf="groupMe.membership?.role === 'OWNER'"
+        expand="block"
+        fill="outline"
+        (click)="openGroupInvite()">
+        Invitar miembros
+      </ion-button>
     </ion-card-content>
   </ion-card>
+
+      <ion-card class="glass appear" *ngIf="groupMe.membership?.role === 'OWNER'">
+        <ion-card-content>
+          <div class="cardTitle">
+            <div class="titleLeft">
+              <h2>Solicitudes de Unirse</h2>
+              <p class="muted">Usuarios que quieren unirse al grupo</p>
+            </div>
+            <ion-chip class="tag">{{ joinRequests.length }} solicitudes</ion-chip>
+          </div>
+
+          <div *ngIf="joinRequestsLoading" class="muted">Cargando solicitudes...</div>
+
+          <div class="members" *ngIf="!joinRequestsLoading">
+            <div class="member" *ngFor="let r of joinRequests">
+              <ion-avatar class="memberAvatar">
+                <img *ngIf="r.user?.avatarUrl" [src]="r.user?.avatarUrl" />
+                <div *ngIf="!r.user?.avatarUrl" class="memberInitials">{{ initials(r.user?.fullName || r.user?.displayName || r.user?.username) }}</div>
+              </ion-avatar>
+              <div class="memberName">{{ r.user?.fullName || r.user?.displayName || r.user?.username }}</div>
+              <ion-button size="small" fill="outline" (click)="acceptJoinRequest(r.user?.id)">Aceptar</ion-button>
+            </div>
+          </div>
+
+          <div class="muted" *ngIf="!joinRequestsLoading && !joinRequests.length">No hay solicitudes.</div>
+        </ion-card-content>
+      </ion-card>
 
           <div class="kpi">
             <div class="kpiNum">{{ groupMe.group.level }}</div>
@@ -219,8 +279,25 @@
 
       <ng-template #noGroupTpl>
         <div class="muted">Aún no perteneces a un grupo.</div>
-        <ion-button expand="block" class="primary">Buscar grupos</ion-button>
-        <ion-button expand="block" fill="outline">Crear grupo</ion-button>
+        <ion-button expand="block" class="primary" (click)="openGroupSearch()">Buscar grupos</ion-button>
+        <ion-button expand="block" fill="outline" (click)="openGroupCreate()">Crear grupo</ion-button>
+        <ion-card class="glass appear" *ngIf="myJoinRequests.length">
+          <ion-card-content>
+            <div class="cardTitle">
+              <div class="titleLeft">
+                <h2>Solicitudes enviadas</h2>
+                <p class="muted">Grupos a los que solicitaste unirte</p>
+              </div>
+              <ion-chip class="tag">{{ myJoinRequests.length }}</ion-chip>
+            </div>
+            <div class="members">
+              <div class="member" *ngFor="let r of myJoinRequests">
+                <div class="memberName">{{ r.group?.name }}</div>
+                <div class="muted small">{{ r.status }}</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
       </ng-template>
     </ng-container>
   </ion-card-content>
@@ -268,10 +345,10 @@
           <div class="avatar">
             <img *ngIf="f.user?.avatarUrl; else initialsTpl" [src]="f.user?.avatarUrl" />
             <ng-template #initialsTpl>
-              <div class="initials">{{ initials(f.user?.displayName) }}</div>
+              <div class="initials">{{ initials(f.user?.displayName || f.user?.username || f.user?.fullName) }}</div>
             </ng-template>
           </div>
-          <div class="name">{{ f.user?.displayName ?? 'Usuario' }}</div>
+          <div class="name">{{ f.user?.displayName || f.user?.username || f.user?.fullName || 'Usuario' }}</div>
         </div>
       </div>
 
@@ -303,10 +380,10 @@
           <div class="avatar pending">
             <img *ngIf="p.fromUser?.avatarUrl; else inInitTpl" [src]="p.fromUser?.avatarUrl" />
             <ng-template #inInitTpl>
-              <div class="initials">{{ initials(p.fromUser?.displayName) }}</div>
+              <div class="initials">{{ initials(p.fromUser?.displayName || p.fromUser?.username || p.fromUser?.fullName) }}</div>
             </ng-template>
           </div>
-          <div class="name">{{ p.fromUser?.displayName ?? 'Usuario' }}</div>
+          <div class="name">{{ p.fromUser?.displayName || p.fromUser?.username || p.fromUser?.fullName || 'Usuario' }}</div>
         </div>
       </div>
 
@@ -318,10 +395,10 @@
           <div class="avatar pendingOut">
             <img *ngIf="p.toUser?.avatarUrl; else outInitTpl" [src]="p.toUser?.avatarUrl" />
             <ng-template #outInitTpl>
-              <div class="initials">{{ initials(p.toUser?.displayName) }}</div>
+              <div class="initials">{{ initials(p.toUser?.displayName || p.toUser?.username || p.toUser?.fullName) }}</div>
             </ng-template>
           </div>
-          <div class="name">{{ p.toUser?.displayName ?? 'Usuario' }}</div>
+          <div class="name">{{ p.toUser?.displayName || p.toUser?.username || p.toUser?.fullName || 'Usuario' }}</div>
         </div>
       </div>
 
@@ -497,16 +574,18 @@
           <h2>Promos sostenibles</h2>
           <p class="muted">Ofertas de la semana</p>
         </div>
-        <ion-chip class="tag">Semana</ion-chip>
+        <div class="actions">
+          <ion-button fill="clear" size="small" (click)="openPromos()">Ver mas</ion-button>
+        </div>
       </div>
 
       <ion-list class="listGlass" inset="false">
-        <ion-item button detail="true" class="itemGlass" *ngFor="let p of promos" (click)="openPromo(p)">
+        <ion-item button detail="false" class="itemGlass" *ngFor="let p of promoItems" (click)="addPromoToCart(p)">
           <ion-label>
-            <h3>{{ p.title }}</h3>
-            <p>{{ p.desc }}</p>
+            <h3>{{ p.name }}</h3>
+            <p>{{ p.description }}</p>
           </ion-label>
-          <ion-badge slot="end">{{ p.price }}</ion-badge>
+          <ion-badge slot="end" *ngIf="p.promo?.active">{{ p.promo?.promoPrice }}</ion-badge>
         </ion-item>
       </ion-list>
     </ion-card-content>
@@ -581,7 +660,7 @@
 <app-weekly-quiz-modal
   *ngIf="quizOpen"
   [open]="quizOpen"
-  (closed)="quizOpen = false">
+  (closed)="closeWeeklyQuiz()">
 </app-weekly-quiz-modal>
 
 <app-edit-profile-modal
@@ -602,6 +681,19 @@
   (closed)="closeProducts()">
 </app-products-modal>
 
+<app-promos-modal
+  *ngIf="promosOpen"
+  [open]="promosOpen"
+  (closed)="closePromos()">
+</app-promos-modal>
+
+<app-notifications-modal
+  *ngIf="notificationsOpen"
+  [open]="notificationsOpen"
+  (updated)="updateNotificationsUnread($event)"
+  (closed)="closeNotifications()">
+</app-notifications-modal>
+
 <app-cart-modal
   *ngIf="cartOpen"
   [open]="cartOpen"
@@ -616,3 +708,29 @@
   (closed)="closeFriendSearch()"
   (invited)="loadFriends()">
 </app-friend-search-modal>
+
+<app-group-invite-modal
+  *ngIf="groupInviteOpen"
+  [open]="groupInviteOpen"
+  [groupId]="groupMe?.group?.id || null"
+  [memberIds]="groupMemberIds"
+  (closed)="closeGroupInvite()"
+  (invited)="loadGroup()">
+</app-group-invite-modal>
+
+<app-group-search-modal
+  *ngIf="groupSearchOpen"
+  [open]="groupSearchOpen"
+  (closed)="closeGroupSearch()"
+  (requested)="closeGroupSearch()">
+</app-group-search-modal>
+
+<app-group-create-modal
+  *ngIf="groupCreateOpen"
+  [open]="groupCreateOpen"
+  (closed)="closeGroupCreate()"
+  (created)="closeGroupCreate()">
+</app-group-create-modal>
+
+
+

@@ -22,4 +22,30 @@ export interface GroupMeDto {
   inGroup: boolean;
   membership?: GroupMembershipDto;
   group?: GroupDto;
+  members?: GroupMemberDto[];
+}
+
+export interface GroupMemberUserDto {
+  id: string;
+  fullName?: string | null;
+  username?: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+}
+
+export interface GroupMemberDto {
+  role: GroupRole;
+  joinedAt: string;
+  user: GroupMemberUserDto | null;
+}
+
+export interface GroupJoinRequestDto {
+  user: GroupMemberUserDto | null;
+  requestedAt: string;
+}
+
+export interface MyGroupJoinRequestDto {
+  group: GroupDto;
+  requestedAt: string;
+  status: string;
 }

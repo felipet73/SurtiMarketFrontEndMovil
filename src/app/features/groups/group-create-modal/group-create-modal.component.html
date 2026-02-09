@@ -1,0 +1,73 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Crear grupo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <ion-list class="listGlass" inset="false">
+            <ion-item class="itemGlass">
+              <ion-label position="stacked">Nombre</ion-label>
+              <ion-input
+                [(ngModel)]="name"
+                placeholder="EcoVecinos Cuenca"
+                autocorrect="off"
+                autocapitalize="words"
+                spellcheck="false">
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="itemGlass">
+              <ion-label position="stacked">Política de ingreso</ion-label>
+              <ion-select [(ngModel)]="joinPolicy">
+                <ion-select-option value="OPEN">OPEN</ion-select-option>
+                <ion-select-option value="REQUEST_APPROVAL">REQUEST_APPROVAL</ion-select-option>
+                <ion-select-option value="INVITE_ONLY">INVITE_ONLY</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="itemGlass">
+              <ion-label position="stacked">Visibilidad</ion-label>
+              <ion-select [(ngModel)]="visibility">
+                <ion-select-option value="PUBLIC">PUBLIC</ion-select-option>
+                <ion-select-option value="PRIVATE">PRIVATE</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+
+          <ion-card class="glass heroCard anim-in" *ngIf="loading">
+            <ion-card-content class="center">
+              <ion-spinner name="crescent"></ion-spinner>
+            </ion-card-content>
+          </ion-card>
+
+          <div class="error" *ngIf="!loading && errorMessage">{{ errorMessage }}</div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="actions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+        <ion-button class="primary" (click)="create()">
+          <ion-icon slot="start" [icon]="icons.add"></ion-icon>
+          Crear
+        </ion-button>
+      </div>
+
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
