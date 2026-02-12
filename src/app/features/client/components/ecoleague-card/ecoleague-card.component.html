@@ -1,4 +1,4 @@
-<ion-card class="glass appear" *ngIf="inGroup; else noGroupTpl">
+﻿<ion-card class="glass appear" *ngIf="inGroup; else noGroupTpl">
   <ion-card-content>
     <div class="cardTitle">
       <div class="titleLeft">
@@ -39,9 +39,9 @@
           <div class="leaderName">{{ l.name }}</div>
           <div class="leaderScore">{{ l.score }}</div>
           <div class="leaderDelta" [class.up]="l.deltaRank > 0" [class.down]="l.deltaRank < 0">
-            <span *ngIf="l.deltaRank > 0">↑ {{ l.deltaRank }}</span>
-            <span *ngIf="l.deltaRank < 0">↓ {{ (l.deltaRank * -1) }}</span>
-            <span *ngIf="l.deltaRank === 0">• 0</span>
+            <span *ngIf="l.deltaRank > 0">a†‘ {{ l.deltaRank }}</span>
+            <span *ngIf="l.deltaRank < 0">a†“ {{ (l.deltaRank * -1) }}</span>
+            <span *ngIf="l.deltaRank === 0">a€¢ 0</span>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@
       <div class="cardTitle">
         <div class="titleLeft">
           <h2>EcoLiga Semanal</h2>
-          <p class="muted">Únete a un grupo para ver tu ranking</p>
+          <p class="muted">Asnete a un grupo para ver tu ranking</p>
         </div>
       </div>
       <div class="muted">Busca o crea un grupo para activar esta competencia.</div>

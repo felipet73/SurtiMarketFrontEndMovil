@@ -1,4 +1,4 @@
-<ion-header>
+﻿<ion-header>
   <ion-toolbar>
     <ion-title>Employee Dashboard</ion-title>
   </ion-toolbar>
@@ -19,7 +19,7 @@
   <ion-list inset="true">
     <ion-item *ngFor="let o of filtered" button detail="true">
       <ion-label>
-        <h3>{{ o.id }} — {{ o.customer }}</h3>
+        <h3>{{ o.id }} a€” {{ o.customer }}</h3>
         <p>Total: {{ o.total }}</p>
       </ion-label>
       <ion-badge slot="end">{{ o.status }}</ion-badge>

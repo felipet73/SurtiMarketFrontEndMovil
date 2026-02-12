@@ -19,10 +19,10 @@ export class StartPage implements OnInit {
     try {
       const me = await this.sus.getMeOrNull();
       if (me) {
-        // ya tiene perfil â†’ dashboard cliente
+        // ya tiene perfil a†’ dashboard cliente
         this.router.navigateByUrl('/dashboard/client', { replaceUrl: true });
       } else {
-        // no existe â†’ cuestionario
+        // no existe a†’ cuestionario
         this.router.navigateByUrl('/sustainability/questionnaire', { replaceUrl: true });
       }
     } finally {

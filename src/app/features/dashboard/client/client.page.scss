@@ -576,6 +576,50 @@ ion-card.glass ion-list ion-item ion-label p {
   justify-items: end;
   gap: 4px;
 }
+.ecoPager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.ecoPageInfo {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ordersPager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.ordersPageInfo {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.orderTotals {
+  margin-top: 6px;
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+}
+.orderItems {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255,255,255,0.12);
+}
+.orderItemName {
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
+}
+.orderItemMeta {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+}
 .ecoAmount {
   font-weight: 900;
   color: #ffcc33;
@@ -594,7 +638,7 @@ ion-card.glass ion-list ion-item ion-label p {
 
 .avatarGrid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr)); /* âœ… 6 por fila */
+  grid-template-columns: repeat(6, minmax(0, 1fr)); /* aœ… 6 por fila */
   gap: 10px;
 }
 

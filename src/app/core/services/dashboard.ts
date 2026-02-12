@@ -21,7 +21,7 @@ export class DashboardService {
         dateKey: res.dateKey,
         weekKey: res.weekKey,
         messages: res.messages,
-        imageSrc: `data:${res.image.mimeType};base64,${res.image.base64}`, // âœ… CLAVE
+        imageSrc: `data:${res.image.mimeType};base64,${res.image.base64}`, // aœ… CLAVE
       })),
     );
   }

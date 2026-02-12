@@ -1,4 +1,4 @@
-<ion-header class="modal-header">
+﻿<ion-header class="modal-header">
   <ion-toolbar class="modal-toolbar">
     <ion-title>Rompecabezas semanal</ion-title>
 
@@ -35,10 +35,10 @@
     <div class="win-banner" *ngIf="winBanner">
       <div class="win-title">
         <ion-icon [name]="icons.trophy"></ion-icon>
-        ¡Completado!
+        áCompletado!
       </div>
       <div class="win-sub" *ngIf="rewardGranted">
-        +{{ winPoints }} XP · +{{ winEcoCoins }} EcoCoins
+        +{{ winPoints }} XP A· +{{ winEcoCoins }} EcoCoins
       </div>
       <div class="win-sub" *ngIf="isSolved && !rewardGranted">
         Listo para reclamar tu recompensa
@@ -62,7 +62,7 @@
           (click)="onSlotTap(i)"
         >
           <img *ngIf="pos !== -1" [src]="tileUrl(pos)" alt="tile">
-          <div *ngIf="pos === -1" class="blank-hint">⬚</div>
+          <div *ngIf="pos === -1" class="blank-hint">a¬s</div>
         </button>
       </ng-container>
     </div>

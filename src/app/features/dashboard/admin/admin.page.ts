@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
   ],
 })
 export class AdminPage {
-  // por ahora son “opciones”; luego conectamos endpoints reales
+  // por ahora son a€œopcionesa€; luego conectamos endpoints reales
   sections = [
     { key: 'products', title: 'Productos', desc: 'Crear, editar, stock, categorías', icon: 'basket-outline', badge: 'Config' },
     { key: 'employees', title: 'Empleados', desc: 'Usuarios, roles, permisos', icon: 'people-outline', badge: 'Roles' },

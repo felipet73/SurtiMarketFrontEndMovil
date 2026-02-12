@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonModal,
@@ -38,6 +38,7 @@ import { ProductsService, ProductDto } from 'src/app/core/services/products';
 import { NotificationsService } from 'src/app/core/services/notifications';
 import { EcoImpactService } from 'src/app/core/services/ecoimpact.service';
 import { EcoImpactLeaderboardDto, EcoImpactMeDto, EcoImpactProgressDto } from 'src/app/core/dto/ecoimpact.dto';
+import { OrdersService, OrderDto } from 'src/app/core/services/orders';
 
 import {
   notificationsOutline,
@@ -107,6 +108,9 @@ export class ClientPage {
   promoItems: ProductDto[] = [];
   notificationsOpen = false;
   notificationsUnread = 0;
+  ordersLoading = true;
+  orders: OrderDto[] = [];
+  ordersPage = 0;
   groupInviteOpen = false;
   groupSearchOpen = false;
   groupCreateOpen = false;
@@ -154,11 +158,13 @@ export class ClientPage {
 
   wallet?: WalletMeDto;
   walletLoading = true;
+  ecoMovementsPage = 0;
   
   constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
     private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService,
     private walletSvc: WalletService, private cartSvc: CartService, private productsSvc: ProductsService,
-    private notificationsSvc: NotificationsService, private ecoimpactSvc: EcoImpactService) { }
+    private notificationsSvc: NotificationsService, private ecoimpactSvc: EcoImpactService,
+    private ordersSvc: OrdersService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -210,6 +216,7 @@ export class ClientPage {
     this.loadWallet();
     this.loadPromos();
     this.loadNotificationsCount();
+    this.loadOrders();
     await Promise.all([
       this.loadEcoImpact(),
       this.loadEcoLeague(),
@@ -315,9 +322,31 @@ export class ClientPage {
     this.walletLoading = true;
     try {
       this.wallet = await this.walletSvc.getMe();
+      this.ecoMovementsPage = 0;
     } finally {
       this.walletLoading = false;
     }
+  }
+
+  get ecoMovements() {
+    return this.wallet?.lastMovements ?? [];
+  }
+
+  get ecoMovementsTotalPages() {
+    return Math.max(1, Math.ceil(this.ecoMovements.length / 5));
+  }
+
+  get ecoMovementsSlice() {
+    const start = this.ecoMovementsPage * 5;
+    return this.ecoMovements.slice(start, start + 5);
+  }
+
+  prevEcoMovements() {
+    if (this.ecoMovementsPage > 0) this.ecoMovementsPage--;
+  }
+
+  nextEcoMovements() {
+    if (this.ecoMovementsPage < this.ecoMovementsTotalPages - 1) this.ecoMovementsPage++;
   }
 
   async loadEcoImpact() {
@@ -463,6 +492,47 @@ export class ClientPage {
     } catch (e) {
       console.error('Notifications count error', e);
       this.notificationsUnread = 0;
+    }
+  }
+
+  async loadOrders() {
+    this.ordersLoading = true;
+    try {
+      const res = await this.ordersSvc.getMy(1, 20);
+      this.orders = res.items ?? [];
+      this.ordersPage = 0;
+    } catch (e) {
+      console.error('Orders load error', e);
+      this.orders = [];
+    } finally {
+      this.ordersLoading = false;
+    }
+  }
+
+  get ordersTotalPages() {
+    return Math.max(1, Math.ceil(this.orders.length / 3));
+  }
+
+  get ordersSlice() {
+    const start = this.ordersPage * 3;
+    return this.orders.slice(start, start + 3);
+  }
+
+  prevOrders() {
+    if (this.ordersPage > 0) this.ordersPage--;
+  }
+
+  nextOrders() {
+    if (this.ordersPage < this.ordersTotalPages - 1) this.ordersPage++;
+  }
+
+  orderStatusLabel(status: string) {
+    switch (status) {
+      case 'PENDING': return 'Pendiente';
+      case 'PAID': return 'Pagado';
+      case 'CANCELLED': return 'Cancelado';
+      case 'FULFILLED': return 'Completado';
+      default: return status;
     }
   }
 

@@ -42,7 +42,7 @@ export class SustainabilityService {
     return await firstValueFrom(this.api.get<QuestionnaireDto>('/sustainability/questionnaire'));
   }
 
-  // âœ… Payload recomendado (pregunta id + value)
+  // aœ… Payload recomendado (pregunta id + value)
   async submitAssessment(answers1: Array<{ id: number; value: number }>) {
     const answers = answers1.map(a => a.value);
     return await firstValueFrom(this.api.post('/sustainability/assessment', { answers }));

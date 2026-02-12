@@ -1,4 +1,4 @@
-<ion-header class="top">
+﻿﻿<ion-header class="top">
   <ion-toolbar>
     <ion-title>Mi Dashboard</ion-title>
 
@@ -106,8 +106,8 @@
       <ng-container *ngIf="!walletLoading && wallet">
         <div class="ecoValue">{{ wallet.ecoCoinsBalance }}</div>
 
-        <ion-list class="listGlass" inset="false" *ngIf="wallet.lastMovements?.length; else noWalletMovements">
-          <ion-item class="itemGlass" *ngFor="let m of wallet.lastMovements">
+        <ion-list class="listGlass" inset="false" *ngIf="ecoMovements.length; else noWalletMovements">
+          <ion-item class="itemGlass" *ngFor="let m of ecoMovementsSlice">
             <ion-label>
               <h3>{{ m.type === 'EARN' ? 'Ganado' : m.type }}</h3>
               <p>{{ m.note }}</p>
@@ -118,6 +118,16 @@
             </div>
           </ion-item>
         </ion-list>
+
+        <div class="ecoPager" *ngIf="ecoMovements.length > 5">
+          <ion-button size="small" fill="clear" (click)="prevEcoMovements()" [disabled]="ecoMovementsPage === 0">
+            Atrás
+          </ion-button>
+          <div class="ecoPageInfo">{{ ecoMovementsPage + 1 }} / {{ ecoMovementsTotalPages }}</div>
+          <ion-button size="small" fill="clear" (click)="nextEcoMovements()" [disabled]="ecoMovementsPage >= ecoMovementsTotalPages - 1">
+            Adelante
+          </ion-button>
+        </div>
 
         <ng-template #noWalletMovements>
           <div class="muted">Sin movimientos recientes.</div>
@@ -473,8 +483,10 @@
       </div>
 
       <div class="challengeTitle">{{ weeklyGroupChallenge.title }}</div>
-      <ion-progress-bar [value]="weeklyGroupChallenge.progress"></ion-progress-bar>
-      <div class="muted small">{{ (weeklyGroupChallenge.progress*100) | number:'1.0-0' }}% completado</div>
+      <ion-progress-bar [value]="(streak?.weekLoggedCount ?? 0) / 7"></ion-progress-bar>
+      <div class="muted small">
+        {{ ((streak?.weekLoggedCount ?? 0) / 7 * 100) | number:'1.0-0' }}% completado · {{ streak?.weekLoggedCount ?? 0 }}/7
+      </div>
     </ion-card-content>
   </ion-card>
 
@@ -491,8 +503,10 @@
       </div>
 
       <div class="challengeTitle">{{ weeklySoloChallenge.title }}</div>
-      <ion-progress-bar [value]="weeklySoloChallenge.progress"></ion-progress-bar>
-      <div class="muted small">{{ (weeklySoloChallenge.progress*100) | number:'1.0-0' }}% completado</div>
+      <ion-progress-bar [value]="(streak?.weekLoggedCount ?? 0) / 7"></ion-progress-bar>
+      <div class="muted small">
+        {{ ((streak?.weekLoggedCount ?? 0) / 7 * 100) | number:'1.0-0' }}% completado · {{ streak?.weekLoggedCount ?? 0 }}/7
+      </div>
 
       <!-- Juegos Indivudiales -->
       <ion-list class="listGlass" inset="false">
@@ -591,25 +605,58 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- 8) Historiales -->
+  <!-- 8) Historial de pedidos -->
   <ion-card class="glass appear">
     <ion-card-content>
       <div class="cardTitle">
         <div class="titleLeft">
-          <h2>Historial</h2>
-          <p class="muted">Actividad reciente</p>
+          <h2>Historial de Pedidos</h2>
+          <p class="muted">Tus últimos pedidos</p>
         </div>
       </div>
 
-      <ion-list class="listGlass" inset="false">
-        <ion-item class="itemGlass" *ngFor="let h of history">
-          <ion-label>
-            <h3>{{ h.title }}</h3>
-            <p>{{ h.info }}</p>
-          </ion-label>
-          <ion-badge slot="end">{{ h.when }}</ion-badge>
-        </ion-item>
-      </ion-list>
+      <div *ngIf="ordersLoading" class="muted">Cargando pedidos...</div>
+
+      <ng-container *ngIf="!ordersLoading">
+        <ion-list class="listGlass" inset="false" *ngIf="ordersSlice.length; else noOrdersTpl">
+          <ion-item class="itemGlass" *ngFor="let o of ordersSlice">
+            <ion-label>
+              <h3>Pedido {{ o._id }}</h3>
+              <p class="muted">Estado: {{ orderStatusLabel(o.status) }}</p>
+              <p class="muted">Fecha: {{ o.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+              <div class="orderTotals">
+                <div>Total: ${{ o.totalMoney | number:'1.2-2' }}</div>
+                <div>EcoCoins: {{ o.totalEcoCoinsSpent }}</div>
+                <div>Descuento: ${{ o.totalMoneyDiscount | number:'1.2-2' }}</div>
+                <div>Pagar: ${{ o.totalMoneyToPay | number:'1.2-2' }}</div>
+              </div>
+              <div class="orderItems" *ngFor="let i of o.items">
+                <div class="orderItemName">{{ i.nameSnapshot }}</div>
+                <div class="orderItemMeta">
+                  Cant: {{ i.qty }} · Unit: ${{ i.unitPriceMoney | number:'1.2-2' }}
+                </div>
+                <div class="orderItemMeta">
+                  EcoCoins: {{ i.ecoCoinsSpent }} · Desc: ${{ i.moneyDiscount | number:'1.2-2' }} · Pagar: ${{ i.moneyToPay | number:'1.2-2' }}
+                </div>
+              </div>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <div class="ordersPager" *ngIf="orders.length > 3">
+          <ion-button size="small" fill="clear" (click)="prevOrders()" [disabled]="ordersPage === 0">
+            Atrás
+          </ion-button>
+          <div class="ordersPageInfo">{{ ordersPage + 1 }} / {{ ordersTotalPages }}</div>
+          <ion-button size="small" fill="clear" (click)="nextOrders()" [disabled]="ordersPage >= ordersTotalPages - 1">
+            Adelante
+          </ion-button>
+        </div>
+      </ng-container>
+
+      <ng-template #noOrdersTpl>
+        <div class="muted">Sin pedidos aún.</div>
+      </ng-template>
     </ion-card-content>
   </ion-card>
 

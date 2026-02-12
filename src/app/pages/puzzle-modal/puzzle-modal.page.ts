@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild,  Input, Output, EventEmitter } from '@angular/core';
+﻿import { Component, ElementRef, ViewChild,  Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,

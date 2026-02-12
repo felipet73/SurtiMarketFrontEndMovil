@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, NgZone  } from '@angular/core';
+﻿import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, NgZone  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
@@ -52,7 +52,7 @@ export class WeeklyQuizModalComponent {
     // si ya está cargando, evita doble llamada
     if (this.loading) return;
 
-    // ✅ asegúrate de entrar en zona Angular
+    // aœ… asegúrate de entrar en zona Angular
     this.zone.run(() => {
       this.loading = true;
       this.done = false;

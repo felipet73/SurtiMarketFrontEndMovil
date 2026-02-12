@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
@@ -8,7 +8,7 @@ import {
 
 import { SustainabilityService, QuestionnaireDto, Dimension } from 'src/app/core/services/sustainability';
 
-// ✅ array tipado para evitar errores TS
+// aœ… array tipado para evitar errores TS
 const DIM_LABEL: Record<Dimension, string> = {
   waste: 'Residuos',
   transport: 'Transporte',

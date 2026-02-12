@@ -1,4 +1,4 @@
-<ion-modal
+﻿<ion-modal
   [isOpen]="open"
   keepContentsMounted="true"
   (willPresent)="init()"
@@ -51,17 +51,17 @@
       <!-- Si terminó: pantalla final -->
       <ion-card class="glass appear heroCard anim-in" *ngIf="done && result">
         <ion-card-content>
-          <div class="finalTitle">¡Muchas gracias! 🎉</div>
+          <div class="finalTitle">áMuchas gracias! ðYZ‰</div>
           <div class="muted">
             Has acertado <b>{{ result.correctCount }}</b> de <b>{{ result.totalQuestions }}</b>
             ({{ result.scorePercent }}%).
           </div>
 
           <div class="reward" *ngIf="result.rewardGranted; else noReward">
-            ✅ Premio obtenido: <b>{{ result.ecoCoinsGranted }}</b> EcoCoins
+            aœ… Premio obtenido: <b>{{ result.ecoCoinsGranted }}</b> EcoCoins
           </div>
           <ng-template #noReward>
-            <div class="reward bad">❌ No has obtenido premio, mejor suerte la próxima.</div>
+            <div class="reward bad">aŒ No has obtenido premio, mejor suerte la próxima.</div>
           </ng-template>
 
           <ion-button class="primary" expand="block" (click)="close()">Cerrar</ion-button>
