@@ -683,6 +683,7 @@
             </ion-avatar>
             <div class="commentMeta">
               <span class="from">{{ commentUserName(c) }}</span>
+              <span class="time" *ngIf="c.direction === 'sent'">Para: {{ commentRecipientName(c) }}</span>
               <span class="time">Recibido {{ c.sentAt | date:'dd/MM/yyyy HH:mm' }}</span>
             </div>
           </div>
@@ -787,5 +788,19 @@
   (created)="closeGroupCreate()">
 </app-group-create-modal>
 
+<app-send-user-message-modal
+  *ngIf="sendUserMessageOpen"
+  [open]="sendUserMessageOpen"
+  [users]="friendUsersForMessage()"
+  (closed)="closeSendUserMessage()"
+  (sent)="onMessageSent()">
+</app-send-user-message-modal>
 
+<app-send-group-message-modal
+  *ngIf="sendGroupMessageOpen"
+  [open]="sendGroupMessageOpen"
+  [members]="groupUsersForMessage()"
+  (closed)="closeSendGroupMessage()"
+  (sent)="onMessageSent()">
+</app-send-group-message-modal>
 

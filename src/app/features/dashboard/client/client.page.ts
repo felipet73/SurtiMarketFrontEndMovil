@@ -39,6 +39,8 @@ import { EcoImpactService } from 'src/app/core/services/ecoimpact.service';
 import { EcoImpactLeaderboardDto, EcoImpactMeDto, EcoImpactProgressDto } from 'src/app/core/dto/ecoimpact.dto';
 import { OrdersService, OrderDto } from 'src/app/core/services/orders';
 import { CommentsService, CommentItemDto } from 'src/app/core/services/comments';
+import { SendUserMessageModalComponent } from '../../comments/send-user-message-modal/send-user-message-modal.component';
+import { SendGroupMessageModalComponent } from '../../comments/send-group-message-modal/send-group-message-modal.component';
 
 import {
   notificationsOutline,
@@ -86,6 +88,8 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
     GroupInviteModalComponent,
     GroupSearchModalComponent,
     GroupCreateModalComponent,
+    SendUserMessageModalComponent,
+    SendGroupMessageModalComponent,
     EcoImpactCardComponent,
     EcoLeagueCardComponent,
     EcoProgressCardComponent,
@@ -114,6 +118,8 @@ export class ClientPage {
   commentsLoading = true;
   commentsTotal = 0;
   comments: CommentItemDto[] = [];
+  sendUserMessageOpen = false;
+  sendGroupMessageOpen = false;
   groupInviteOpen = false;
   groupSearchOpen = false;
   groupCreateOpen = false;
@@ -533,12 +539,44 @@ export class ClientPage {
     return sender.displayName || sender.username || sender.fullName || 'Usuario';
   }
 
+  commentRecipientName(c: CommentItemDto) {
+    const recipient = c.recipient;
+    return recipient.displayName || recipient.username || recipient.fullName || 'Usuario';
+  }
+
   openFriendMessage() {
-    console.log('Enviar mensaje a amigo');
+    this.sendUserMessageOpen = true;
   }
 
   openGroupMessage() {
-    console.log('Enviar mensaje a grupo');
+    this.sendGroupMessageOpen = true;
+  }
+
+  closeSendUserMessage() {
+    this.sendUserMessageOpen = false;
+  }
+
+  closeSendGroupMessage() {
+    this.sendGroupMessageOpen = false;
+  }
+
+  async onMessageSent() {
+    await Promise.all([
+      this.loadNotificationsCount(),
+      this.loadComments(),
+    ]);
+  }
+
+  friendUsersForMessage() {
+    return this.friendsMe?.friends
+      ?.map(f => f.user)
+      .filter((u): u is FriendUserDto => !!u?.id) ?? [];
+  }
+
+  groupUsersForMessage() {
+    return this.groupMe?.members
+      ?.map(m => m.user)
+      .filter((u): u is NonNullable<typeof u> => !!u?.id) ?? [];
   }
 
   get ordersTotalPages() {

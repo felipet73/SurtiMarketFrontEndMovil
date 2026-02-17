@@ -33,4 +33,12 @@ export class CommentsService {
   getReceived() {
     return firstValueFrom(this.api.get<CommentsMeResponseDto>('/comments/me/received'));
   }
+
+  sendToUser(recipientUserId: string, text: string) {
+    return firstValueFrom(this.api.post('/comments/user', { recipientUserId, text }));
+  }
+
+  sendToGroup(text: string) {
+    return firstValueFrom(this.api.post('/comments/group', { text }));
+  }
 }
