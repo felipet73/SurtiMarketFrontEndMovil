@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonModal,
   IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
-  IonList, IonItem, IonLabel, IonBadge, IonText, IonInput, IonSkeletonText, IonCardHeader, IonCardTitle, IonCardSubtitle } from '@ionic/angular/standalone';
-import { FormsModule } from '@angular/forms';
+  IonList, IonItem, IonLabel, IonBadge, IonText, IonSkeletonText, IonCardHeader, IonCardTitle, IonCardSubtitle,
+  IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 
 import { PuzzleModalPage } from '../../../pages/puzzle-modal/puzzle-modal.page';
 import { WeeklyQuizModalComponent } from '../../challenges/weekly-quiz-modal/weekly-quiz-modal.component';
@@ -39,6 +39,9 @@ import { NotificationsService } from 'src/app/core/services/notifications';
 import { EcoImpactService } from 'src/app/core/services/ecoimpact.service';
 import { EcoImpactLeaderboardDto, EcoImpactMeDto, EcoImpactProgressDto } from 'src/app/core/dto/ecoimpact.dto';
 import { OrdersService, OrderDto } from 'src/app/core/services/orders';
+import { CommentsService, CommentItemDto } from 'src/app/core/services/comments';
+import { SendUserMessageModalComponent } from '../../comments/send-user-message-modal/send-user-message-modal.component';
+import { SendGroupMessageModalComponent } from '../../comments/send-group-message-modal/send-group-message-modal.component';
 
 import {
   notificationsOutline,
@@ -86,12 +89,14 @@ const DIMENSIONS: readonly Dimension[] = ['waste', 'transport', 'energy', 'water
     GroupInviteModalComponent,
     GroupSearchModalComponent,
     GroupCreateModalComponent,
+    SendUserMessageModalComponent,
+    SendGroupMessageModalComponent,
     EcoImpactCardComponent,
     EcoLeagueCardComponent,
     EcoProgressCardComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
     IonCard, IonCardContent, IonChip, IonAvatar, IonProgressBar,
-    IonList, IonItem, IonLabel, IonBadge, IonInput, FormsModule
+    IonList, IonItem, IonLabel, IonBadge, IonSelect, IonSelectOption
   ],
 })
 export class ClientPage {
@@ -111,6 +116,13 @@ export class ClientPage {
   ordersLoading = true;
   orders: OrderDto[] = [];
   ordersPage = 0;
+  commentsLoading = true;
+  commentsTotal = 0;
+  comments: CommentItemDto[] = [];
+  messageUsers: Array<{ id: string; name: string }> = [];
+  selectedMessageUserId = 'ALL';
+  sendUserMessageOpen = false;
+  sendGroupMessageOpen = false;
   groupInviteOpen = false;
   groupSearchOpen = false;
   groupCreateOpen = false;
@@ -159,12 +171,13 @@ export class ClientPage {
   wallet?: WalletMeDto;
   walletLoading = true;
   ecoMovementsPage = 0;
+  currentUserId = '';
   
   constructor(private sus: SustainabilityService, private dashboard: DashboardService, private router: Router, 
     private streakSvc: StreakService, private auth: AuthService, private groups: GroupsService, private friendsSvc: FriendsService,
     private walletSvc: WalletService, private cartSvc: CartService, private productsSvc: ProductsService,
     private notificationsSvc: NotificationsService, private ecoimpactSvc: EcoImpactService,
-    private ordersSvc: OrdersService) { }
+    private ordersSvc: OrdersService, private commentsSvc: CommentsService) { }
   sustainability: any = {
               overallScore: 0,
               dimensionScores: {
@@ -217,6 +230,7 @@ export class ClientPage {
     this.loadPromos();
     this.loadNotificationsCount();
     this.loadOrders();
+    this.loadComments();
     await Promise.all([
       this.loadEcoImpact(),
       this.loadEcoLeague(),
@@ -314,6 +328,7 @@ export class ClientPage {
   async loadProfile() {
     let user = await this.auth.me();
     console.log('Usuario actual:', user);
+    this.currentUserId = user.id ?? '';
     this.profile.fullName = user.fullName || user?.username || user.displayName || '';
     this.profile.avatarUrl = user.avatarUrl || this.profile.avatarUrl; // default avatar
   }
@@ -509,6 +524,93 @@ export class ClientPage {
     }
   }
 
+  async loadComments() {
+    this.commentsLoading = true;
+    try {
+      const res = await this.commentsSvc.getReceived();
+      this.commentsTotal = res.total ?? 0;
+      this.comments = res.items ?? [];
+      this.buildMessageUsers();
+    } catch (e) {
+      console.error('Comments load error', e);
+      this.commentsTotal = 0;
+      this.comments = [];
+      this.messageUsers = [];
+      this.selectedMessageUserId = 'ALL';
+    } finally {
+      this.commentsLoading = false;
+    }
+  }
+
+  private buildMessageUsers() {
+    const usersMap = new Map<string, { id: string; name: string }>();
+    for (const c of this.comments) {
+      const candidate = c.direction === 'sent' ? c.recipient : c.sender;
+      if (!candidate?.id || candidate.id === this.currentUserId) continue;
+      const name = candidate.displayName || candidate.username || candidate.fullName || 'Usuario';
+      if (!usersMap.has(candidate.id)) {
+        usersMap.set(candidate.id, { id: candidate.id, name });
+      }
+    }
+    this.messageUsers = Array.from(usersMap.values());
+    if (this.selectedMessageUserId !== 'ALL' && !usersMap.has(this.selectedMessageUserId)) {
+      this.selectedMessageUserId = 'ALL';
+    }
+  }
+
+  get filteredComments() {
+    if (this.selectedMessageUserId === 'ALL') return this.comments;
+    return this.comments.filter(c => {
+      const candidate = c.direction === 'sent' ? c.recipient : c.sender;
+      return candidate?.id === this.selectedMessageUserId;
+    });
+  }
+
+  commentUserName(c: CommentItemDto) {
+    const sender = c.sender;
+    return sender.displayName || sender.username || sender.fullName || 'Usuario';
+  }
+
+  commentRecipientName(c: CommentItemDto) {
+    const recipient = c.recipient;
+    return recipient.displayName || recipient.username || recipient.fullName || 'Usuario';
+  }
+
+  openFriendMessage() {
+    this.sendUserMessageOpen = true;
+  }
+
+  openGroupMessage() {
+    this.sendGroupMessageOpen = true;
+  }
+
+  closeSendUserMessage() {
+    this.sendUserMessageOpen = false;
+  }
+
+  closeSendGroupMessage() {
+    this.sendGroupMessageOpen = false;
+  }
+
+  async onMessageSent() {
+    await Promise.all([
+      this.loadNotificationsCount(),
+      this.loadComments(),
+    ]);
+  }
+
+  friendUsersForMessage() {
+    return this.friendsMe?.friends
+      ?.map(f => f.user)
+      .filter((u): u is FriendUserDto => !!u?.id) ?? [];
+  }
+
+  groupUsersForMessage() {
+    return this.groupMe?.members
+      ?.map(m => m.user)
+      .filter((u): u is NonNullable<typeof u> => !!u?.id) ?? [];
+  }
+
   get ordersTotalPages() {
     return Math.max(1, Math.ceil(this.orders.length / 3));
   }
@@ -602,23 +704,6 @@ export class ClientPage {
     { title: 'Reto completado', when: 'Ayer', info: '+30 XP, +3 EcoCoins' },
     { title: 'Invitación aceptada', when: 'Hace 3 días', info: 'Nuevo miembro en tu grupo' },
   ];
-
-  // --- Tarjeta 9: Chat
-  chat = {
-    lastMessages: [
-      { from: 'Ana', text: '¿Hacemos el reto de residuos hoy?', time: '19:10' },
-      { from: 'Tú', text: 'Sí, yo separo cartón y plástico.', time: '19:12' },
-      { from: 'Luis', text: 'Yo llevo bolsas reutilizables mañana.', time: '19:14' },
-    ]
-  };
-  messageDraft = '';
-
-  sendMessage() {
-    const text = this.messageDraft.trim();
-    if (!text) return;
-    this.chat.lastMessages.push({ from: 'Tú', text, time: 'Ahora' });
-    this.messageDraft = '';
-  }
 
   // --- Helpers
   scoreToProgress(score1to10: number) {

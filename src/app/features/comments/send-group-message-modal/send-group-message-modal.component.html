@@ -1,0 +1,70 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Enviar mensaje a mi grupo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass appear">
+        <ion-card-content>
+          <div class="muted title">Miembros del grupo</div>
+          <ion-list class="listGlass" inset="false">
+            <ion-item class="itemGlass" *ngFor="let m of members">
+              <ion-avatar slot="start" class="avatar">
+                <img *ngIf="m.avatarUrl; else memberInitials" [src]="m.avatarUrl" />
+                <ng-template #memberInitials>
+                  <div class="initials">{{ initials(m) }}</div>
+                </ng-template>
+              </ion-avatar>
+              <ion-label>
+                <h3>{{ displayName(m) }}</h3>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+          <div class="muted" *ngIf="!members.length">No hay miembros en el grupo.</div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass appear">
+        <ion-card-content>
+          <ion-textarea
+            class="messageInput"
+            [(ngModel)]="text"
+            [maxlength]="600"
+            [autoGrow]="true"
+            rows="5"
+            placeholder="Escribe tu mensaje para el grupo">
+          </ion-textarea>
+
+          <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+          <ion-button
+            expand="block"
+            class="sendBtn"
+            [disabled]="sending || !text.trim()"
+            (click)="send()">
+            <ion-icon slot="start" [icon]="icons.send"></ion-icon>
+            {{ sending ? 'Enviando...' : 'Enviar mensaje' }}
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="actions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+      <div style="height:16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

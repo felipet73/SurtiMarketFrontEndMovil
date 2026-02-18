@@ -666,29 +666,51 @@
       <div class="cardTitle">
         <div class="titleLeft">
           <h2>Mensajes</h2>
-          <p class="muted">Tu EcoVecindad</p>
+          <p class="muted">Total comentarios: {{ commentsTotal }}</p>
         </div>
       </div>
 
-      <div class="chat">
-        <div class="bubble" *ngFor="let m of chat.lastMessages" [class.me]="m.from==='Tú'">
-          <div class="meta">
-            <span class="from">{{ m.from }}</span>
-            <span class="time">{{ m.time }}</span>
+      <div *ngIf="commentsLoading" class="muted">Cargando comentarios...</div>
+
+      <div class="chat" *ngIf="!commentsLoading">
+        <ion-item class="messageFilter" lines="none">
+          <ion-label>Filtrar por usuario</ion-label>
+          <ion-select
+            interface="popover"
+            [value]="selectedMessageUserId"
+            (ionChange)="selectedMessageUserId = $event.detail.value">
+            <ion-select-option value="ALL">Todos</ion-select-option>
+            <ion-select-option *ngFor="let u of messageUsers" [value]="u.id">
+              {{ u.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div class="bubble" *ngFor="let c of filteredComments" [class.me]="c.direction === 'sent'">
+          <div class="commentHeader">
+            <ion-avatar class="commentAvatar">
+              <img *ngIf="c.sender.avatarUrl" [src]="c.sender.avatarUrl" />
+              <div class="commentInitials" *ngIf="!c.sender.avatarUrl">
+                {{ initials(c.sender.displayName || c.sender.username || c.sender.fullName) }}
+              </div>
+            </ion-avatar>
+            <div class="commentMeta">
+              <span class="from">{{ commentUserName(c) }}</span>
+              <span class="time" *ngIf="c.direction === 'sent'">Para: {{ commentRecipientName(c) }}</span>
+              <span class="time">Recibido {{ c.sentAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
           </div>
-          <div class="text">{{ m.text }}</div>
+          <div class="text">{{ c.message }}</div>
         </div>
+        <div class="muted" *ngIf="!filteredComments.length">No hay comentarios para mostrar.</div>
       </div>
 
-      <div class="composer">
-        <ion-input
-          class="input"
-          placeholder="Escribe un mensaje…"
-          [(ngModel)]="messageDraft">
-        </ion-input>
-
-        <ion-button class="send" (click)="sendMessage()">
-          <ion-icon icon="send-outline"></ion-icon>
+      <div class="messageActions">
+        <ion-button expand="block" fill="outline" (click)="openFriendMessage()">
+          Enviar mensaje a amigo
+        </ion-button>
+        <ion-button expand="block" fill="outline" (click)="openGroupMessage()">
+          Enviar mensaje a grupo
         </ion-button>
       </div>
     </ion-card-content>
@@ -779,5 +801,18 @@
   (created)="closeGroupCreate()">
 </app-group-create-modal>
 
+<app-send-user-message-modal
+  *ngIf="sendUserMessageOpen"
+  [open]="sendUserMessageOpen"
+  [users]="friendUsersForMessage()"
+  (closed)="closeSendUserMessage()"
+  (sent)="onMessageSent()">
+</app-send-user-message-modal>
 
-
+<app-send-group-message-modal
+  *ngIf="sendGroupMessageOpen"
+  [open]="sendGroupMessageOpen"
+  [members]="groupUsersForMessage()"
+  (closed)="closeSendGroupMessage()"
+  (sent)="onMessageSent()">
+</app-send-group-message-modal>
