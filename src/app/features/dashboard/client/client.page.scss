@@ -313,6 +313,13 @@
   margin-top: 12px;
 }
 
+.messageFilter {
+  --background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
 .composer {
   display: grid;
   grid-template-columns: 1fr 46px;
