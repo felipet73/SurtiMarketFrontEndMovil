@@ -1,0 +1,48 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Agregar empleado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <div class="formGrid">
+            <ion-input label="Full Name" labelPlacement="stacked" [(ngModel)]="form.fullName"></ion-input>
+            <ion-input label="Email" labelPlacement="stacked" type="email" [(ngModel)]="form.email"></ion-input>
+            <ion-input label="Username" labelPlacement="stacked" [(ngModel)]="form.username"></ion-input>
+            <ion-input label="Password" labelPlacement="stacked" type="password" [(ngModel)]="form.password"></ion-input>
+
+            <ion-select label="Rol" labelPlacement="stacked" [(ngModel)]="form.role" interface="popover">
+              <ion-select-option value="EMPLOYEE">EMPLOYEE</ion-select-option>
+            </ion-select>
+          </div>
+
+          <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+          <div class="actions">
+            <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+            <ion-button
+              (click)="save()"
+              [disabled]="saving || !form.fullName.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()">
+              <ion-icon [icon]="icons.add" slot="start"></ion-icon>
+              {{ saving ? 'Guardando...' : 'Crear empleado' }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>

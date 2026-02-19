@@ -1,0 +1,121 @@
+<ion-modal
+  [isOpen]="open"
+  keepContentsMounted="true"
+  (willPresent)="init()"
+  (didDismiss)="close()">
+
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Productos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <div class="searchRow">
+            <ion-icon [icon]="icons.search"></ion-icon>
+            <ion-input
+              [(ngModel)]="query"
+              placeholder="Buscar productos"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false">
+            </ion-input>
+          </div>
+
+          <div class="toggles">
+            <ion-toggle [(ngModel)]="onlyPromo">Solo en promocion</ion-toggle>
+            <ion-toggle [(ngModel)]="showInactive">Ver inactivos</ion-toggle>
+          </div>
+
+          <ion-button expand="block" class="addBtn" (click)="createProduct()">
+            <ion-icon [icon]="icons.add" slot="start"></ion-icon>
+            Crear nuevo
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass productCard" *ngFor="let p of filteredProducts">
+        <ion-card-content>
+          <img *ngIf="p.images?.length" class="cover" [src]="p.images[0]" />
+
+          <div class="titleRow">
+            <div class="title">{{ p.name }}</div>
+            <ion-chip class="tag" *ngIf="p.promo?.active">Promo</ion-chip>
+          </div>
+
+          <div class="desc">{{ p.description }}</div>
+
+          <div class="meta">
+            <div>Marca: {{ p.brand }}</div>
+            <div>Categoria: {{ p.category }}</div>
+            <div>Stock: {{ p.stock }}</div>
+            <div>EcoScore: {{ p.ecoScore }}</div>
+            <div>SKU: {{ p.sku }}</div>
+          </div>
+
+          <div class="priceRow">
+            <span class="base" *ngIf="p.promo?.active">${{ p.basePrice }}</span>
+            <span class="price">${{ displayPrice(p) }}</span>
+          </div>
+
+          <div class="actions">
+            <ion-button size="small" fill="outline" (click)="editProduct(p)">
+              <ion-icon [icon]="icons.edit" slot="start"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button size="small" fill="outline" color="warning" (click)="promoteProduct(p)">
+              <ion-icon [icon]="icons.promo" slot="start"></ion-icon>
+              {{ p.promo?.active ? 'Detener promocion' : 'Promocionar' }}
+            </ion-button>
+            <ion-button size="small" fill="outline" color="danger" (click)="deactivateProduct(p)">
+              <ion-icon [icon]="icons.deactivate" slot="start"></ion-icon>
+              {{ p.isActive ? 'Desactivar' : 'Activar' }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && !errorMessage && !filteredProducts.length">
+        <ion-card-content class="muted">No hay productos para mostrar.</ion-card-content>
+      </ion-card>
+
+      <div class="footerActions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+      <div style="height: 16px;"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<app-edit-product-modal
+  *ngIf="editOpen"
+  [open]="editOpen"
+  [product]="selectedProduct"
+  (closed)="closeEditProduct()"
+  (updated)="onProductUpdated()">
+</app-edit-product-modal>
+
+<app-create-product-modal
+  *ngIf="createOpen"
+  [open]="createOpen"
+  (closed)="closeCreateProduct()"
+  (created)="onProductCreated()">
+</app-create-product-modal>

@@ -1,0 +1,117 @@
+<ion-modal [isOpen]="open" keepContentsMounted="true" (willPresent)="init()" (didDismiss)="close()">
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Gestionar pedidos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="iconClose"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <div class="statusFilters">
+            <ion-button size="small" [fill]="selectedStatus==='PENDING' ? 'solid' : 'outline'" (click)="changeStatus('PENDING')">Pendiente</ion-button>
+            <ion-button size="small" [fill]="selectedStatus==='CONFIRMED' ? 'solid' : 'outline'" (click)="changeStatus('CONFIRMED')">Confirmado</ion-button>
+            <ion-button size="small" [fill]="selectedStatus==='DELIVERED' ? 'solid' : 'outline'" (click)="changeStatus('DELIVERED')">Enviado</ion-button>
+            <ion-button size="small" [fill]="selectedStatus==='CANCELLED' ? 'solid' : 'outline'" (click)="changeStatus('CANCELLED')">Cancelado</ion-button>
+          </div>
+
+          <div class="filters">
+            <ion-input label="Cliente" labelPlacement="stacked" [(ngModel)]="customerFilter"></ion-input>
+            <ion-input label="Desde" labelPlacement="stacked" type="date" [(ngModel)]="fromDate"></ion-input>
+            <ion-input label="Hasta" labelPlacement="stacked" type="date" [(ngModel)]="toDate"></ion-input>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass orderCard" *ngFor="let o of filteredOrders">
+        <ion-card-content>
+          <div class="titleRow">
+            <div class="title">Pedido {{ o._id }}</div>
+            <ion-chip class="tag">{{ statusLabel(o.status) }}</ion-chip>
+          </div>
+
+          <div class="meta">Cliente: {{ customerName(o) }}</div>
+          <div class="meta">Fecha: {{ o.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+
+          <div class="items">
+            <div class="itemLine" *ngFor="let i of o.items">
+              {{ i.nameSnapshot }} · x{{ i.qty }} · ${{ i.moneyToPay | number:'1.2-2' }}
+            </div>
+          </div>
+
+          <div class="totals">
+            <div>Total: ${{ o.totalMoney | number:'1.2-2' }}</div>
+            <div>EcoCoins: {{ o.totalEcoCoinsSpent }}</div>
+            <div>Descuento: ${{ o.totalMoneyDiscount | number:'1.2-2' }}</div>
+            <div>Pagar: ${{ o.totalMoneyToPay | number:'1.2-2' }}</div>
+          </div>
+
+          <div class="actions">
+            <ion-button size="small" fill="outline" (click)="openDetail(o)">Ver detalle</ion-button>
+
+            <ion-button
+              size="small"
+              color="success"
+              *ngIf="o.status === 'PENDING'"
+              [disabled]="actionLoading"
+              (click)="confirm(o)">
+              Confirmar
+            </ion-button>
+
+            <ion-button
+              size="small"
+              color="warning"
+              *ngIf="o.status === 'CONFIRMED'"
+              [disabled]="actionLoading"
+              (click)="deliver(o)">
+              Enviar
+            </ion-button>
+
+            <ion-button
+              size="small"
+              color="danger"
+              *ngIf="o.status === 'PENDING' || o.status === 'CONFIRMED'"
+              [disabled]="actionLoading"
+              (click)="cancel(o)">
+              Cancelar
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && !errorMessage && !filteredOrders.length">
+        <ion-card-content class="muted">No hay pedidos para mostrar.</ion-card-content>
+      </ion-card>
+
+      <div class="footerActions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+      <div style="height: 16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<app-order-detail-modal
+  *ngIf="detailOpen"
+  [open]="detailOpen"
+  [order]="selectedOrder"
+  [customerName]="selectedOrder ? customerName(selectedOrder) : ''"
+  [productImages]="productImages"
+  (closed)="closeDetail()">
+</app-order-detail-modal>

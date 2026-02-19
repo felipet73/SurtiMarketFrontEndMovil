@@ -1,0 +1,50 @@
+<ion-modal [isOpen]="open" keepContentsMounted="true" (didDismiss)="close()">
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Detalle de pedido</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="iconClose"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass" *ngIf="order">
+        <ion-card-content>
+          <div class="title">Pedido {{ order._id }}</div>
+          <div class="meta">Cliente: {{ customerName || order.userId }}</div>
+          <div class="meta">Estado: {{ order.status }}</div>
+          <div class="meta">Fecha: {{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+
+          <div class="items">
+            <div class="item" *ngFor="let i of order.items">
+              <img *ngIf="imageFor(i.productId)" [src]="imageFor(i.productId)" class="thumb" />
+              <div class="itemBody">
+                <div class="itemName">{{ i.nameSnapshot }}</div>
+                <div class="itemMeta">Cantidad: {{ i.qty }}</div>
+                <div class="itemMeta">Precio unitario: ${{ i.unitPriceMoney | number:'1.2-2' }}</div>
+                <div class="itemMeta">EcoCoins: {{ i.ecoCoinsSpent }}</div>
+                <div class="itemMeta">Descuento: ${{ i.moneyDiscount | number:'1.2-2' }}</div>
+                <div class="itemMeta">Total item: ${{ i.moneyToPay | number:'1.2-2' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="totals">
+            <div>Total: ${{ order.totalMoney | number:'1.2-2' }}</div>
+            <div>EcoCoins: {{ order.totalEcoCoinsSpent }}</div>
+            <div>Descuento: ${{ order.totalMoneyDiscount | number:'1.2-2' }}</div>
+            <div>Pagar: ${{ order.totalMoneyToPay | number:'1.2-2' }}</div>
+          </div>
+
+          <div class="actions">
+            <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>

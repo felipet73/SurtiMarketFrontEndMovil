@@ -42,6 +42,13 @@ export interface OrdersMyResponse {
   items: OrderDto[];
 }
 
+export interface OrdersAllResponse {
+  page: number;
+  limit: number;
+  total: number;
+  items: OrderDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   constructor(private api: ApiService) {}
@@ -52,5 +59,23 @@ export class OrdersService {
 
   getMy(page = 1, limit = 20) {
     return firstValueFrom(this.api.get<OrdersMyResponse>(`/orders/my?page=${page}&limit=${limit}`));
+  }
+
+  getAll(page = 1, limit = 100, status?: string) {
+    const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (status) q.set('status', status);
+    return firstValueFrom(this.api.get<OrdersAllResponse>(`/orders?${q.toString()}`));
+  }
+
+  confirm(orderId: string) {
+    return firstValueFrom(this.api.patch(`/orders/${orderId}/confirm`, {}));
+  }
+
+  cancel(orderId: string) {
+    return firstValueFrom(this.api.patch(`/orders/${orderId}/cancel`, {}));
+  }
+
+  deliver(orderId: string) {
+    return firstValueFrom(this.api.patch(`/orders/${orderId}/deliver`, {}));
   }
 }
