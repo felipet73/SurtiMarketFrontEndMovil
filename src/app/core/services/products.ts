@@ -119,4 +119,12 @@ export class ProductsService {
   activateProduct(productId: string) {
     return firstValueFrom(this.api.patch<ProductDto>(`/products/${productId}/activate`, {}));
   }
+
+  uploadProductImages(productId: string, files: File[]) {
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append('files', file);
+    }
+    return firstValueFrom(this.api.post<ProductDto>(`/products/${productId}/images`, formData));
+  }
 }

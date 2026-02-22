@@ -29,6 +29,15 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.fadeUp {
+  animation: fadeUp 560ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .cardTitle {
   display: flex;
   justify-content: space-between;
@@ -81,4 +90,50 @@ ion-card.glass ion-list ion-item ion-label p {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
   font-size: 13px;
+}
+
+.analyticsFilters {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.applyBtn {
+  --border-radius: 12px;
+  height: 42px;
+}
+
+.analyticsState {
+  margin-top: 12px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.error {
+  margin-top: 12px;
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+.chartTitle {
+  color: rgba(255,255,255,0.92);
+  font-weight: 900;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+canvas {
+  width: 100% !important;
+  max-height: 300px;
+}
+
+@media (max-width: 640px) {
+  .analyticsFilters {
+    grid-template-columns: 1fr;
+  }
+  .applyBtn { width: 100%; }
 }

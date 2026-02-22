@@ -1,0 +1,107 @@
+<ion-modal [isOpen]="open" keepContentsMounted="true" (willPresent)="init()" (didDismiss)="close()">
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Gestion de Retos IA</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <div class="tabs">
+            <ion-button [fill]="activeTab === 'challenge' ? 'solid' : 'outline'" (click)="setTab('challenge')">
+              Templates retos
+            </ion-button>
+            <ion-button [fill]="activeTab === 'dashboard' ? 'solid' : 'outline'" (click)="setTab('dashboard')">
+              Config dashboard cliente
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="loading">
+        <ion-card-content class="center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="glass" *ngIf="!loading && errorMessage">
+        <ion-card-content class="error">{{ errorMessage }}</ion-card-content>
+      </ion-card>
+
+      <ng-container *ngIf="!loading && activeTab === 'challenge'">
+        <ion-card class="glass card" *ngFor="let t of challengeTemplates">
+          <ion-card-content>
+            <div class="titleRow">
+              <div class="title">{{ t.key }}</div>
+              <ion-chip class="tag">{{ t.isActive ? 'Activo' : 'Inactivo' }}</ion-chip>
+            </div>
+            <div class="meta">Tipo: {{ t.gameType }} · Cadencia: {{ t.cadence }}</div>
+            <div class="meta">Dimension: {{ t.focusDimension }} · Locale: {{ t.locale }}</div>
+            <div class="meta">Reward: {{ t.rewardEcoCoins }} · Preguntas: {{ t.numQuestions }} · Temp: {{ t.temperature }}</div>
+            <div class="meta">Actualizado: {{ t.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+            <div class="actions">
+              <ion-button size="small" fill="outline" (click)="editChallenge(t)">
+                <ion-icon [icon]="icons.edit" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card class="glass" *ngIf="!challengeTemplates.length">
+          <ion-card-content class="muted">No hay templates de retos.</ion-card-content>
+        </ion-card>
+      </ng-container>
+
+      <ng-container *ngIf="!loading && activeTab === 'dashboard'">
+        <ion-card class="glass card" *ngFor="let t of dashboardTemplates">
+          <ion-card-content>
+            <div class="titleRow">
+              <div class="title">{{ t.key }}</div>
+              <ion-chip class="tag">{{ t.isActive ? 'Activo' : 'Inactivo' }}</ion-chip>
+            </div>
+            <div class="meta">Locale: {{ t.locale }}</div>
+            <div class="meta">Cache diario: {{ t.dailyCacheHours }}h · Cache imagen semanal: {{ t.weeklyImageCacheDays }} dias</div>
+            <div class="meta">Actualizado: {{ t.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+            <div class="actions">
+              <ion-button size="small" fill="outline" (click)="editDashboard(t)">
+                <ion-icon [icon]="icons.edit" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card class="glass" *ngIf="!dashboardTemplates.length">
+          <ion-card-content class="muted">No hay templates de dashboard.</ion-card-content>
+        </ion-card>
+      </ng-container>
+
+      <div class="footerActions">
+        <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+      </div>
+      <div style="height: 16px"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<app-edit-challenge-template-modal
+  *ngIf="editChallengeOpen"
+  [open]="editChallengeOpen"
+  [template]="selectedChallenge"
+  (closed)="closeEditChallenge()"
+  (saved)="onChallengeSaved()">
+</app-edit-challenge-template-modal>
+
+<app-edit-dashboard-template-modal
+  *ngIf="editDashboardOpen"
+  [open]="editDashboardOpen"
+  [template]="selectedDashboard"
+  (closed)="closeEditDashboard()"
+  (saved)="onDashboardSaved()">
+</app-edit-dashboard-template-modal>

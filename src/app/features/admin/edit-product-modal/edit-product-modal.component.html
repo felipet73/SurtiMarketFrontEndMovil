@@ -19,6 +19,43 @@
     <ion-content class="page">
       <ion-card class="glass">
         <ion-card-content>
+          <input #imagesInput type="file" accept="image/*" multiple hidden (change)="onImagesSelected($event)" />
+
+          <div class="imagesBlock">
+            <div class="imagesHeader">
+              <div class="label">Imagenes del producto</div>
+              <div class="slotInfo">{{ imageIndex + 1 }} / {{ totalImageSlots }}</div>
+            </div>
+
+            <div class="carousel">
+              <ion-button fill="clear" size="small" (click)="prevImage()" [disabled]="imageIndex === 0">
+                <ion-icon [icon]="icons.prev"></ion-icon>
+              </ion-button>
+
+              <div class="imagePanel" *ngIf="!isAddSlot(); else addSlotTpl">
+                <img class="productImage" [src]="currentImage()" />
+              </div>
+
+              <ng-template #addSlotTpl>
+                <div class="addPanel">
+                  <div class="addText">Agregar nuevas imagenes</div>
+                  <ion-button size="small" fill="outline" (click)="triggerAddImages(imagesInput)">
+                    <ion-icon [icon]="icons.add" slot="start"></ion-icon>
+                    Agregar nueva
+                  </ion-button>
+                </div>
+              </ng-template>
+
+              <ion-button fill="clear" size="small" (click)="nextImage()" [disabled]="imageIndex >= totalImageSlots - 1">
+                <ion-icon [icon]="icons.next"></ion-icon>
+              </ion-button>
+            </div>
+
+            <div class="pendingInfo" *ngIf="newImageFiles.length">
+              Nuevas imagenes seleccionadas: {{ newImageFiles.length }}
+            </div>
+          </div>
+
           <div class="formGrid">
             <ion-input label="Nombre" labelPlacement="stacked" [(ngModel)]="form.name"></ion-input>
             <ion-input label="Precio base" labelPlacement="stacked" type="number" [(ngModel)]="form.basePrice"></ion-input>

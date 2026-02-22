@@ -1,28 +1,39 @@
-﻿<ion-header>
+<ion-header class="top">
   <ion-toolbar>
     <ion-title>Employee Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon [icon]="iconLogout"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="page">
-  <div class="hero">
-    <h2>Gestión de pedidos</h2>
-    <p>Filtra y administra el estado de los pedidos.</p>
-  </div>
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Gestionar Pedidos</h2>
+          <p class="muted">Mismo flujo de pedidos que Admin.</p>
+        </div>
+        <ion-chip class="tag">Pedidos</ion-chip>
+      </div>
 
-  <ion-segment [value]="status" (ionChange)="onStatusChange($event)">
-    <ion-segment-button value="PENDING"><ion-label>Pendientes</ion-label></ion-segment-button>
-    <ion-segment-button value="IN_PROGRESS"><ion-label>En proceso</ion-label></ion-segment-button>
-    <ion-segment-button value="DONE"><ion-label>Listos</ion-label></ion-segment-button>
-  </ion-segment>
-
-  <ion-list inset="true">
-    <ion-item *ngFor="let o of filtered" button detail="true">
-      <ion-label>
-        <h3>{{ o.id }} a€” {{ o.customer }}</h3>
-        <p>Total: {{ o.total }}</p>
-      </ion-label>
-      <ion-badge slot="end">{{ o.status }}</ion-badge>
-    </ion-item>
-  </ion-list>
+      <ion-list class="listGlass" inset="false">
+        <ion-item class="itemGlass" button detail="true" (click)="openOrders()">
+          <ion-label>
+            <h3>Abrir gestion de pedidos</h3>
+            <p>Filtrar, confirmar, enviar, cancelar y ver detalle.</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+
+<app-orders-modal-admin
+  *ngIf="ordersModalOpen"
+  [open]="ordersModalOpen"
+  (closed)="closeOrders()">
+</app-orders-modal-admin>

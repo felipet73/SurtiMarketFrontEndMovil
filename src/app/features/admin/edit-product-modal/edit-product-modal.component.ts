@@ -5,7 +5,7 @@ import {
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
   IonContent, IonCard, IonCardContent, IonInput, IonTextarea, ToastController
 } from '@ionic/angular/standalone';
-import { closeOutline, saveOutline } from 'ionicons/icons';
+import { closeOutline, saveOutline, chevronBackOutline, chevronForwardOutline, addOutline } from 'ionicons/icons';
 import { ProductDto, ProductsService } from 'src/app/core/services/products';
 
 @Component({
@@ -29,10 +29,15 @@ export class EditProductModalComponent {
   icons = {
     close: closeOutline,
     save: saveOutline,
+    prev: chevronBackOutline,
+    next: chevronForwardOutline,
+    add: addOutline,
   };
 
   saving = false;
   errorMessage = '';
+  imageIndex = 0;
+  newImageFiles: File[] = [];
 
   form = {
     name: '',
@@ -55,6 +60,8 @@ export class EditProductModalComponent {
       stock: this.product?.stock ?? 0,
       description: this.product?.description ?? '',
     };
+    this.imageIndex = 0;
+    this.newImageFiles = [];
   }
 
   close() {
@@ -72,6 +79,9 @@ export class EditProductModalComponent {
         stock: Number(this.form.stock),
         description: this.form.description.trim(),
       });
+      if (this.newImageFiles.length) {
+        await this.productsSvc.uploadProductImages(this.product._id, this.newImageFiles);
+      }
       await this.presentToast('Producto actualizado correctamente', 'success');
       this.updated.emit();
       this.close();
@@ -86,5 +96,42 @@ export class EditProductModalComponent {
   private async presentToast(message: string, color: string) {
     const t = await this.toast.create({ message, duration: 1800, color });
     await t.present();
+  }
+
+  get currentImages() {
+    return this.product?.images ?? [];
+  }
+
+  get totalImageSlots() {
+    return this.currentImages.length + 1;
+  }
+
+  isAddSlot() {
+    return this.imageIndex >= this.currentImages.length;
+  }
+
+  currentImage() {
+    if (this.isAddSlot()) return '';
+    return this.currentImages[this.imageIndex] ?? '';
+  }
+
+  prevImage() {
+    if (this.imageIndex > 0) this.imageIndex--;
+  }
+
+  nextImage() {
+    if (this.imageIndex < this.totalImageSlots - 1) this.imageIndex++;
+  }
+
+  triggerAddImages(input: HTMLInputElement) {
+    input.click();
+  }
+
+  onImagesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+    this.newImageFiles = [...this.newImageFiles, ...files];
+    input.value = '';
   }
 }
