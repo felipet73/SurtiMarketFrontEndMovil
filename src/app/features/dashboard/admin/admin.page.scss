@@ -1,10 +1,150 @@
-.page { --background: #0b1220; }
-.hero {
-  padding: 18px 18px 8px;
-  color: rgba(255,255,255,0.92);
-  h2 { margin: 0 0 6px; font-weight: 900; }
-  p { margin: 0; opacity: .75; }
+.page {
+  --background: radial-gradient(circle at 20% 15%, rgba(109, 255, 182, 0.16), transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(0, 170, 255, 0.14), transparent 42%),
+                linear-gradient(180deg, #0b1220 0%, #070b14 100%);
 }
-ion-list { animation: pop 420ms ease-out both; }
-@keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.tag { opacity: .9; }
+
+.top ion-toolbar {
+  --background: rgb(27 42 73 / 90%);
+  color: azure;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+.appear {
+  animation: pop 520ms ease-out both;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeUp {
+  animation: fadeUp 560ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cardTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.titleLeft h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.muted {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12.5px;
+}
+
+.tag {
+  opacity: 0.95;
+  border-radius: 999px;
+  color: white;
+}
+
+.listGlass {
+  --background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.itemGlass {
+  --background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+ion-card.glass ion-list ion-item ion-label h3 {
+  color: #ffcc33;
+  font-weight: 900;
+  margin: 0;
+  font-size: 15px;
+}
+
+ion-card.glass ion-list ion-item ion-label p {
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  font-size: 13px;
+}
+
+.analyticsFilters {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.applyBtn {
+  --border-radius: 12px;
+  height: 42px;
+}
+
+.analyticsState {
+  margin-top: 12px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.quickRanges {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quickRanges ion-button {
+  --border-radius: 12px;
+}
+
+.error {
+  margin-top: 12px;
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+.chartTitle {
+  color: rgba(255,255,255,0.92);
+  font-weight: 900;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+canvas {
+  width: 100% !important;
+  max-height: 300px;
+}
+
+@media (max-width: 640px) {
+  .analyticsFilters {
+    grid-template-columns: 1fr;
+  }
+  .applyBtn { width: 100%; }
+}

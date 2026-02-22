@@ -1,4 +1,4 @@
-﻿<ion-header>
+<ion-header class="top">
   <ion-toolbar>
     <ion-title>Admin Dashboard</ion-title>
     <ion-buttons slot="end">
@@ -8,19 +8,113 @@
 </ion-header>
 
 <ion-content class="page">
-  <div class="hero">
-    <h2>Panel de configuración</h2>
-    <p>Administra productos, empleados y promociones.</p>
-  </div>
+  <ion-refresher slot="fixed" (ionRefresh)="onPullRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-  <ion-list inset="true">
-    <ion-item button detail="true" *ngFor="let s of sections" (click)="open(s.key)">
-      <ion-icon [name]="s.icon" slot="start"></ion-icon>
-      <ion-label>
-        <h3>{{ s.title }}</h3>
-        <p>{{ s.desc }}</p>
-      </ion-label>
-      <ion-chip slot="end" class="tag">{{ s.badge }}</ion-chip>
-    </ion-item>
-  </ion-list>
+  <ion-card class="glass appear heroCard">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Panel de configuracion</h2>
+          <p class="muted">Administra productos, empleados, pedidos y configuracion IA.</p>
+        </div>
+        <ion-chip class="tag">Admin</ion-chip>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <ion-list class="listGlass" inset="false">
+        <ion-item class="itemGlass" button detail="true" *ngFor="let s of sections" (click)="open(s.key)">
+          <ion-icon [name]="s.icon" slot="start"></ion-icon>
+          <ion-label>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.desc }}</p>
+          </ion-label>
+          <ion-chip slot="end" class="tag">{{ s.badge }}</ion-chip>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="glass appear">
+    <ion-card-content>
+      <div class="cardTitle">
+        <div class="titleLeft">
+          <h2>Graficos analiticos</h2>
+          <p class="muted">Dashboard consolidado por fecha</p>
+        </div>
+        <ion-button size="small" fill="outline" (click)="refreshAnalytics()" [disabled]="analyticsLoading">Actualizar</ion-button>
+      </div>
+
+      <div class="analyticsFilters">
+        <ion-input label="Desde" labelPlacement="stacked" type="date" [(ngModel)]="analyticsFrom"></ion-input>
+        <ion-input label="Hasta" labelPlacement="stacked" type="date" [(ngModel)]="analyticsTo"></ion-input>
+        <ion-button class="applyBtn" (click)="refreshAnalytics()" [disabled]="analyticsLoading">Aplicar</ion-button>
+      </div>
+
+      <div class="quickRanges">
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('7d')" [disabled]="analyticsLoading">7 dias</ion-button>
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('30d')" [disabled]="analyticsLoading">30 dias</ion-button>
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('month')" [disabled]="analyticsLoading">Este mes</ion-button>
+      </div>
+
+      <div *ngIf="analyticsLoading" class="analyticsState">
+        <ion-spinner name="crescent"></ion-spinner>
+        <div class="muted">Cargando graficos...</div>
+      </div>
+      <div *ngIf="!analyticsLoading && analyticsError" class="error">{{ analyticsError }}</div>
+    </ion-card-content>
+  </ion-card>
+
+  <ng-container *ngIf="!analyticsLoading && !analyticsError">
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">1) Actividad diaria</div>
+        <canvas baseChart [type]="'line'" [data]="lineActivityData" [options]="lineOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">2) Dimension semanal (stacked)</div>
+        <canvas baseChart [type]="'bar'" [data]="stackedDimensionData" [options]="stackedBarOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">3) EcoCoins breakdown</div>
+        <canvas baseChart [type]="'doughnut'" [data]="doughnutEcoCoinsData" [options]="doughnutOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">4) Top clientes por pedidos</div>
+        <canvas baseChart [type]="'bar'" [data]="horizontalCustomersData" [options]="horizontalBarOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">5) Distribucion de rachas</div>
+        <canvas baseChart [type]="'bar'" [data]="barStreakData" [options]="barOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="glass fadeUp">
+      <ion-card-content>
+        <div class="chartTitle">6) Pedidos vs ticket promedio semanal</div>
+        <canvas baseChart [type]="'bar'" [data]="comboOrdersTicketData" [options]="comboOptions"></canvas>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 </ion-content>
+
+<app-users-modal *ngIf="usersModalOpen" [open]="usersModalOpen" (closed)="closeUsersModal()"></app-users-modal>
+<app-products-modal-admin *ngIf="productsModalOpen" [open]="productsModalOpen" (closed)="closeProductsModal()"></app-products-modal-admin>
+<app-orders-modal-admin *ngIf="ordersModalOpen" [open]="ordersModalOpen" (closed)="closeOrdersModal()"></app-orders-modal-admin>
+<app-ai-prompts-modal *ngIf="aiPromptsModalOpen" [open]="aiPromptsModalOpen" (closed)="closeAiPromptsModal()"></app-ai-prompts-modal>

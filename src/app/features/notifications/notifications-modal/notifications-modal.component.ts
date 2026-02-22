@@ -37,10 +37,12 @@ export class NotificationsModalComponent {
   loading = false;
   errorMessage = '';
   items: NotificationDto[] = [];
+  private closeHandled = false;
 
   constructor(private notifications: NotificationsService) {}
 
   async init() {
+    this.closeHandled = false;
     this.loading = true;
     this.errorMessage = '';
     try {
@@ -54,7 +56,16 @@ export class NotificationsModalComponent {
     }
   }
 
-  close() {
+  async close() {
+    if (this.closeHandled) return;
+    this.closeHandled = true;
+    try {
+      await this.notifications.readNonActionable();
+      this.items = this.items.map(n => this.canRespond(n) ? n : { ...n, status: 'READ' });
+      this.emitUnread();
+    } catch (e) {
+      console.error('Read non-actionable notifications error', e);
+    }
     this.closed.emit();
   }
 

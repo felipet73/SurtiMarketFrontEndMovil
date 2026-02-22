@@ -1,0 +1,129 @@
+.page {
+  --background: radial-gradient(circle at 20% 15%, rgba(109,255,182,0.14), transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(0,170,255,0.12), transparent 42%),
+                linear-gradient(180deg, #0b1220 0%, #070b14 100%);
+}
+
+.top ion-toolbar {
+  --background: rgba(10, 16, 28, 0.65);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.40);
+}
+
+.searchRow {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 8px;
+  align-items: center;
+  color: rgba(255,255,255,0.8);
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+.toggles {
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.addBtn {
+  margin-top: 10px;
+  --border-radius: 12px;
+}
+
+.cover {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.06);
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.title {
+  color: rgba(255,255,255,0.95);
+  font-weight: 900;
+}
+
+.tag {
+  border-radius: 999px;
+}
+
+.desc {
+  margin-top: 6px;
+  color: rgba(255,255,255,0.78);
+  font-size: 13px;
+}
+
+.meta {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  color: rgba(255,255,255,0.72);
+  font-size: 12px;
+}
+
+.priceRow {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.base {
+  color: rgba(255,255,255,0.6);
+  text-decoration: line-through;
+}
+
+.price {
+  color: #ffcc33;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footerActions {
+  margin: 0 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error {
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+.muted {
+  color: rgba(255,255,255,0.72);
+}
+
+.center {
+  display: grid;
+  justify-items: center;
+  padding: 12px;
+}

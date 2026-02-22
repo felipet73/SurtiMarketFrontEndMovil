@@ -1,0 +1,42 @@
+<ion-modal [isOpen]="open" keepContentsMounted="true" (willPresent)="init()" (didDismiss)="close()">
+  <ng-template>
+    <ion-header class="top">
+      <ion-toolbar>
+        <ion-title>Editar template de retos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">
+            <ion-icon [icon]="icons.close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="page">
+      <ion-card class="glass">
+        <ion-card-content>
+          <div class="formGrid">
+            <ion-input label="Reward EcoCoins" labelPlacement="stacked" type="number" [(ngModel)]="form.rewardEcoCoins"></ion-input>
+            <ion-input label="Numero de preguntas" labelPlacement="stacked" type="number" [(ngModel)]="form.numQuestions"></ion-input>
+            <ion-input label="Temperatura" labelPlacement="stacked" type="number" [(ngModel)]="form.temperature"></ion-input>
+            <ion-input label="Locale" labelPlacement="stacked" [(ngModel)]="form.locale"></ion-input>
+            <ion-input label="Dimension foco" labelPlacement="stacked" [(ngModel)]="form.focusDimension"></ion-input>
+            <ion-textarea label="System Prompt" labelPlacement="stacked" rows="4" [(ngModel)]="form.systemPrompt"></ion-textarea>
+            <ion-textarea label="User Prompt" labelPlacement="stacked" rows="4" [(ngModel)]="form.userPrompt"></ion-textarea>
+            <ion-textarea label="Card Image Prompt" labelPlacement="stacked" rows="3" [(ngModel)]="form.cardImagePrompt"></ion-textarea>
+            <ion-textarea label="JSON Schema" labelPlacement="stacked" rows="8" [(ngModel)]="form.jsonSchemaText"></ion-textarea>
+          </div>
+
+          <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+          <div class="actions">
+            <ion-button fill="outline" (click)="close()">Regresar</ion-button>
+            <ion-button (click)="save()" [disabled]="saving">
+              <ion-icon [icon]="icons.save" slot="start"></ion-icon>
+              {{ saving ? 'Guardando...' : 'Guardar' }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>

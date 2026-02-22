@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
-  IonLabel, IonList, IonItem, IonBadge
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
+  IonCard, IonCardContent, IonChip, IonList, IonItem, IonLabel, IonIcon
 } from '@ionic/angular/standalone';
-
-type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE';
+import { Router } from '@angular/router';
+import { OrdersModalAdminComponent } from '../../admin/orders-modal-admin/orders-modal-admin.component';
+import { logOutOutline } from 'ionicons/icons';
 
 @Component({
   standalone: true,
@@ -14,25 +15,26 @@ type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE';
   styleUrls: ['./employee.page.scss'],
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
-    IonLabel, IonList, IonItem, IonBadge
+    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
+    IonCard, IonCardContent, IonChip, IonList, IonItem, IonLabel, IonIcon,
+    OrdersModalAdminComponent
   ],
 })
 export class EmployeePage {
-  status: OrderStatus = 'PENDING';
+  ordersModalOpen = true;
+  iconLogout = logOutOutline;
 
-  // mock por ahora
-  orders = [
-    { id: 'ORD-1001', customer: 'Cliente A', total: '$12.50', status: 'PENDING' as OrderStatus },
-    { id: 'ORD-1002', customer: 'Cliente B', total: '$9.90', status: 'IN_PROGRESS' as OrderStatus },
-    { id: 'ORD-1003', customer: 'Cliente C', total: '$18.00', status: 'DONE' as OrderStatus },
-  ];
+  constructor(private router: Router) {}
 
-  get filtered() {
-    return this.orders.filter(o => o.status === this.status);
+  openOrders() {
+    this.ordersModalOpen = true;
   }
 
-  onStatusChange(ev: any) {
-    this.status = ev.detail.value as OrderStatus;
+  closeOrders() {
+    this.ordersModalOpen = false;
+  }
+
+  logout() {
+    this.router.navigateByUrl('/', { replaceUrl: true });
   }
 }

@@ -113,4 +113,20 @@ export class AuthService {
     return res;
   }
 
+  async uploadMyAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await firstValueFrom(
+      this.api.post<UserResponse>('/auth/me/avatar', formData)
+    );
+    const token = this.getToken();
+    if (token) {
+      this.saveAuth(token, res as AuthUser);
+    } else {
+      localStorage.setItem(this.userKey, JSON.stringify(res));
+      this.currentUserSubject.next(res as AuthUser);
+    }
+    return res;
+  }
+
 }

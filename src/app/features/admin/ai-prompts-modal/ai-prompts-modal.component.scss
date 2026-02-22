@@ -1,0 +1,28 @@
+.page {
+  --background: radial-gradient(circle at 20% 15%, rgba(109,255,182,0.14), transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(0,170,255,0.12), transparent 42%),
+                linear-gradient(180deg, #0b1220 0%, #070b14 100%);
+}
+
+.top ion-toolbar {
+  --background: rgba(10, 16, 28, 0.65);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.glass {
+  margin: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.titleRow { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.title { color: rgba(255,255,255,0.95); font-weight: 900; }
+.meta { color: rgba(255,255,255,0.76); font-size: 12px; margin-top: 4px; }
+.tag { border-radius: 999px; }
+.actions { margin-top: 10px; display: flex; justify-content: flex-end; }
+.footerActions { margin: 0 14px; display: flex; justify-content: flex-end; }
+.error { color: #ff8a8a; font-weight: 800; }
+.muted { color: rgba(255,255,255,0.72); }
+.center { display: grid; justify-items: center; padding: 12px; }

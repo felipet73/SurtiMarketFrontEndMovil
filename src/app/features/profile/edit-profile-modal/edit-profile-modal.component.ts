@@ -60,6 +60,7 @@ export class EditProfileModalComponent {
 
   form?: UpdateProfilePayload;
   avatarPreview = '';
+  selectedAvatarFile: File | null = null;
 
   constructor(private auth: AuthService) {}
 
@@ -89,6 +90,7 @@ export class EditProfileModalComponent {
     this.errorMessage = '';
     this.form = undefined;
     this.avatarPreview = '';
+    this.selectedAvatarFile = null;
   }
 
   private fillForm(me: UserResponse) {
@@ -122,9 +124,9 @@ export class EditProfileModalComponent {
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : '';
       this.avatarPreview = result;
-      this.form!.avatarUrl = result;
     };
     reader.readAsDataURL(file);
+    this.selectedAvatarFile = file;
     input.value = '';
   }
 
@@ -139,8 +141,12 @@ export class EditProfileModalComponent {
     this.saving = true;
     this.errorMessage = '';
     try {
-      const res = await this.auth.updateProfile(this.form);
+      let res = await this.auth.updateProfile(this.form);
+      if (this.selectedAvatarFile) {
+        res = await this.auth.uploadMyAvatar(this.selectedAvatarFile);
+      }
       this.fillForm(res);
+      this.selectedAvatarFile = null;
     } catch (e) {
       console.error('Profile update error', e);
       this.errorMessage = 'No fue posible actualizar el perfil.';

@@ -15,4 +15,12 @@ export class ApiService {
   get<T>(path: string) {
     return this.http.get<T>(`${this.base}${path}`);
   }
+
+  patch<T>(path: string, body: unknown) {
+    return this.http.patch<T>(`${this.base}${path}`, body);
+  }
+
+  delete<T>(path: string) {
+    return this.http.delete<T>(`${this.base}${path}`);
+  }
 }

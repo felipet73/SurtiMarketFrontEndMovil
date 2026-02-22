@@ -35,3 +35,73 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ---- Base visual rules for dark UI consistency ---- */
+:root {
+  --app-toolbar-bg: #1b2a49;
+  --app-toolbar-text: #ffffff;
+  --app-text-on-dark: rgba(255, 255, 255, 0.92);
+  --app-muted-on-dark: rgba(255, 255, 255, 0.72);
+  --app-accent-on-dark: #ffcc33;
+}
+
+ion-toolbar {
+  --background: var(--app-toolbar-bg) !important;
+  --color: var(--app-toolbar-text) !important;
+  color: var(--app-toolbar-text) !important;
+}
+
+ion-toolbar ion-title,
+ion-toolbar ion-button,
+ion-toolbar ion-icon,
+ion-toolbar ion-label {
+  color: var(--app-toolbar-text) !important;
+}
+
+/* Common dark containers used across dashboards/modals */
+.page,
+.glass,
+.listGlass,
+.itemGlass,
+ion-card.glass,
+ion-item.itemGlass {
+  color: var(--app-text-on-dark);
+}
+
+.page .muted,
+.glass .muted,
+.listGlass .muted,
+.itemGlass .muted {
+  color: var(--app-muted-on-dark) !important;
+}
+
+/* Keep key titles clearly visible on dark backgrounds */
+.page h1,
+.page h2,
+.page h3,
+.glass h1,
+.glass h2,
+.glass h3,
+.listGlass h1,
+.listGlass h2,
+.listGlass h3 {
+  color: var(--app-text-on-dark);
+}
+
+/* Optional highlight color for prices/tags on dark UI */
+.price,
+.ecoAmount,
+.accentText {
+  color: var(--app-accent-on-dark);
+}
+
+/* Chips: enforce readable text on dark UI */
+ion-chip {
+  --color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+ion-chip::part(native),
+ion-chip::part(label) {
+  color: #ffffff !important;
+}

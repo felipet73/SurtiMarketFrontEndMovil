@@ -44,4 +44,8 @@ export class NotificationsService {
   acceptGroupInvite(notificationId: string) {
     return firstValueFrom(this.api.post(`/groups/invites/${notificationId}/accept`, {}));
   }
+
+  readNonActionable() {
+    return firstValueFrom(this.api.post('/notifications/me/read-non-actionable', {}));
+  }
 }
