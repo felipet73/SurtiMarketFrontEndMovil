@@ -113,6 +113,24 @@ export class AdminPage implements OnInit {
     await this.loadAnalytics();
   }
 
+  async applyQuickRange(range: '7d' | '30d' | 'month') {
+    const today = new Date();
+    const end = new Date(today);
+    let start = new Date(today);
+
+    if (range === '7d') {
+      start.setDate(start.getDate() - 6);
+    } else if (range === '30d') {
+      start.setDate(start.getDate() - 29);
+    } else {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+    }
+
+    this.analyticsFrom = this.formatDateInput(start);
+    this.analyticsTo = this.formatDateInput(end);
+    await this.loadAnalytics();
+  }
+
   async loadAnalytics() {
     this.analyticsLoading = true;
     this.analyticsError = '';
@@ -136,11 +154,9 @@ export class AdminPage implements OnInit {
 
   private setDefaultAnalyticsRange() {
     if (this.analyticsFrom || this.analyticsTo) return;
-
     const to = new Date();
     const from = new Date(to);
-    from.setMonth(from.getMonth() - 1);
-
+    from.setDate(from.getDate() - 29);
     this.analyticsFrom = this.formatDateInput(from);
     this.analyticsTo = this.formatDateInput(to);
   }

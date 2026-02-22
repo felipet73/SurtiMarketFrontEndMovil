@@ -113,6 +113,17 @@ ion-card.glass ion-list ion-item ion-label p {
   padding: 8px 0 4px;
 }
 
+.quickRanges {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quickRanges ion-button {
+  --border-radius: 12px;
+}
+
 .error {
   margin-top: 12px;
   color: #ff8a8a;

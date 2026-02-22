@@ -55,6 +55,12 @@
         <ion-button class="applyBtn" (click)="refreshAnalytics()" [disabled]="analyticsLoading">Aplicar</ion-button>
       </div>
 
+      <div class="quickRanges">
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('7d')" [disabled]="analyticsLoading">7 dias</ion-button>
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('30d')" [disabled]="analyticsLoading">30 dias</ion-button>
+        <ion-button size="small" fill="outline" (click)="applyQuickRange('month')" [disabled]="analyticsLoading">Este mes</ion-button>
+      </div>
+
       <div *ngIf="analyticsLoading" class="analyticsState">
         <ion-spinner name="crescent"></ion-spinner>
         <div class="muted">Cargando graficos...</div>
