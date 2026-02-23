@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+ï»¿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface AwarenessResponse {
   dateKey: string;
@@ -11,7 +12,7 @@ export interface AwarenessResponse {
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private readonly baseUrl = 'http://localhost:3000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -21,7 +22,7 @@ export class DashboardService {
         dateKey: res.dateKey,
         weekKey: res.weekKey,
         messages: res.messages,
-        imageSrc: `data:${res.image.mimeType};base64,${res.image.base64}`, // aœ… CLAVE
+        imageSrc: `data:${res.image.mimeType};base64,${res.image.base64}`, // aÅ“â€¦ CLAVE
       })),
     );
   }

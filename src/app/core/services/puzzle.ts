@@ -1,5 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 export type Tile = { correctIndex: number; url: string };
 
@@ -26,7 +27,7 @@ export type ClaimResponse = {
 
 @Injectable({ providedIn: 'root' })
 export class PuzzleService {
-  private readonly baseUrl = 'http://localhost:3000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
