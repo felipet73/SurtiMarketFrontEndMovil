@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import {
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
   IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonInput,
-  IonBadge, IonThumbnail, IonSpinner
+  IonBadge, IonSpinner
 } from '@ionic/angular/standalone';
 import { closeOutline, addOutline, removeOutline, cartOutline, searchOutline } from 'ionicons/icons';
 
@@ -21,7 +21,7 @@ import { CartService } from 'src/app/core/services/cart';
     FormsModule,
     IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
     IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonInput,
-    IonBadge, IonThumbnail, IonSpinner
+    IonBadge, IonSpinner
   ],
 })
 export class PromosModalComponent {

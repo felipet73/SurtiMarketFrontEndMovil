@@ -81,12 +81,12 @@
 
           <ion-progress-bar [value]="progress"></ion-progress-bar>
 
-          <div class="qText">{{ currentQ?.q }}</div>
+          <div class="qText">{{ currentQ.q }}</div>
 
           <div class="choices">
             <button
               class="choice"
-              *ngFor="let c of currentQ?.choices; let i = index"
+              *ngFor="let c of currentQ.choices; let i = index"
               (click)="pick(i)"
               [class.selected]="answers[step]===i">
               <span class="bullet">{{ i + 1 }}</span>

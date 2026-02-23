@@ -26,10 +26,10 @@
 
     <ng-container *ngIf="!loading && !error && data">
       <div class="myRank">
-        <div class="rankNum">#{{ data.myGroup?.rank ?? '-' }}</div>
+        <div class="rankNum">#{{ data.myGroup.rank }}</div>
         <div class="rankInfo">
           <div class="rankLabel">Mi puesto</div>
-          <div class="rankScore">{{ data.myGroup?.score ?? 0 }} pts</div>
+          <div class="rankScore">{{ data.myGroup.score }} pts</div>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonBadge,
+  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
   IonButton, IonSpinner, IonCard, IonCardContent, IonButtons, IonIcon
 } from '@ionic/angular/standalone';
 import { arrowDownOutline, arrowUpOutline, removeOutline, refreshOutline, chevronBackOutline } from 'ionicons/icons';
@@ -17,7 +17,7 @@ import { EcoImpactLeaderboardLeader } from 'src/app/core/dto/ecoimpact.dto';
   styleUrls: ['./ecoimpact-leaderboard.page.scss'],
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonBadge,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
     IonButton, IonSpinner, IonCard, IonCardContent, IonButtons, IonIcon
   ],
 })

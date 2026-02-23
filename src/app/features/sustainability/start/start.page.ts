@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+ï»¿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonContent, IonCard, IonCardContent, IonSpinner, IonHeader, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonCard, IonCardContent, IonSpinner } from '@ionic/angular/standalone';
 import { SustainabilityService } from 'src/app/core/services/sustainability';
 
 @Component({
@@ -9,7 +9,7 @@ import { SustainabilityService } from 'src/app/core/services/sustainability';
   selector: 'app-sustainability-start',
   templateUrl: './start.page.html',
   styleUrls: ['./start.page.scss'],
-  imports: [IonToolbar, IonHeader, CommonModule, IonContent, IonCard, IonCardContent, IonSpinner],
+  imports: [CommonModule, IonContent, IonCard, IonCardContent, IonSpinner],
 })
 export class StartPage implements OnInit {
   loading = true;
@@ -19,10 +19,10 @@ export class StartPage implements OnInit {
     try {
       const me = await this.sus.getMeOrNull();
       if (me) {
-        // ya tiene perfil a†’ dashboard cliente
+        // ya tiene perfil aâ€ â€™ dashboard cliente
         this.router.navigateByUrl('/dashboard/client', { replaceUrl: true });
       } else {
-        // no existe a†’ cuestionario
+        // no existe aâ€ â€™ cuestionario
         this.router.navigateByUrl('/sustainability/questionnaire', { replaceUrl: true });
       }
     } finally {
@@ -30,3 +30,4 @@ export class StartPage implements OnInit {
     }
   }
 }
+

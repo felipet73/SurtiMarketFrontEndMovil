@@ -738,5 +738,9 @@ ion-card.glass ion-list ion-item ion-label p {
   .avatarGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
+.select-txt {
+    --color: white !important;
+}
+
 
 

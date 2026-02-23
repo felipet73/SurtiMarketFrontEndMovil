@@ -30,16 +30,16 @@
       </div>
 
       <div class="summary">
-        {{ data.ai?.summary }}
+        {{ data.ai.summary }}
       </div>
 
       <div class="aiCard">
         <div class="aiHeader">
-          <div class="aiTitle">{{ activeMessage()?.title }}</div>
+          <div class="aiTitle">{{ activeMessage().title }}</div>
           <div class="aiStep">{{ activeIndex + 1 }} / {{ messages().length }}</div>
         </div>
-        <div class="aiBody">{{ activeMessage()?.text }}</div>
-        <div class="aiCta">{{ activeMessage()?.cta }}</div>
+        <div class="aiBody">{{ activeMessage().text }}</div>
+        <div class="aiCta">{{ activeMessage().cta }}</div>
         <div class="aiNav">
           <ion-button size="small" fill="outline" (click)="prev()">
             <ion-icon slot="icon-only" [icon]="icons.prev"></ion-icon>
