@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
-  IonButton, IonProgressBar, IonSpinner, IonChip, IonIcon,
+  IonButton, IonProgressBar, IonSpinner, IonChip,
   IonRadioGroup, IonRadio
 } from '@ionic/angular/standalone';
 
@@ -25,7 +25,7 @@ const DIM_LABEL: Record<Dimension, string> = {
   imports: [
     CommonModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
-    IonButton, IonProgressBar, IonSpinner, IonChip, IonIcon,
+    IonButton, IonProgressBar, IonSpinner, IonChip,
     IonRadioGroup, IonRadio
   ],
 })

@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   IonContent, IonCard, IonCardContent, IonItem, IonInput, IonIcon, IonButton, IonSpinner,
-  AnimationController, ToastController, Platform, IonHeader, IonToolbar, IonTitle } from '@ionic/angular/standalone';
+  AnimationController, ToastController, Platform } from '@ionic/angular/standalone';
 
 import { AuthService } from 'src/app/core/services/auth';
 import { RegisterModalComponent } from '../register-modal/register-modal.component';
@@ -14,7 +14,7 @@ import { RegisterModalComponent } from '../register-modal/register-modal.compone
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  imports: [IonTitle, IonToolbar, IonHeader,
+  imports: [
     CommonModule,
     ReactiveFormsModule,
     RegisterModalComponent,

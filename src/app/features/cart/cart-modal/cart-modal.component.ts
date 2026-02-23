@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-  IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonBadge,
+  IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel,
   IonSpinner, ToastController
 } from '@ionic/angular/standalone';
 import { closeOutline, cartOutline, checkmarkOutline, addOutline, removeOutline, trashOutline } from 'ionicons/icons';
@@ -21,7 +21,7 @@ import { WalletService } from 'src/app/core/services/wallet';
     CommonModule,
     FormsModule,
     IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-    IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonBadge,
+    IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel,
     IonSpinner
   ],
 })

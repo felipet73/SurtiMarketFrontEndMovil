@@ -168,7 +168,7 @@
           <h2>Mi Perfil sostenible</h2>
           <p class="muted">Puntajes por dimensión (1–10)</p>
         </div>
-        <ion-chip style="background: white;font-family: fangsong; font-weight: bold;" primaryss="tag">Overall {{ sustainability.overallScore }}/10</ion-chip>
+        <ion-chip style="font-family: fangsong; font-weight: bold;" primaryss="tag">Overall {{ sustainability.overallScore }}/10</ion-chip>
       </div>
 
       <div class="bars">
@@ -302,7 +302,7 @@
             </div>
             <div class="members">
               <div class="member" *ngFor="let r of myJoinRequests">
-                <div class="memberName">{{ r.group?.name }}</div>
+                <div class="memberName">{{ r.group.name }}</div>
                 <div class="muted small">{{ r.status }}</div>
               </div>
             </div>
@@ -672,13 +672,14 @@
 
       <div *ngIf="commentsLoading" class="muted">Cargando comentarios...</div>
 
-      <div class="chat" *ngIf="!commentsLoading">
-        <ion-item class="messageFilter" lines="none">
-          <ion-label>Filtrar por usuario</ion-label>
+      <div class="chat" *ngIf="!commentsLoading" >
+        <ion-item class="messageFilter" lines="none" style="color: white !important;">
+          <ion-label style="color:white;">Filtrar por usuario</ion-label>
           <ion-select
             interface="popover"
             [value]="selectedMessageUserId"
-            (ionChange)="selectedMessageUserId = $event.detail.value">
+            (ionChange)="selectedMessageUserId = $event.detail.value"
+            >            
             <ion-select-option value="ALL">Todos</ion-select-option>
             <ion-select-option *ngFor="let u of messageUsers" [value]="u.id">
               {{ u.name }}
