@@ -1,4 +1,4 @@
-# SurtiMarket Mobile Frontend (Ionic + Angular Standalone)
+﻿# SurtiMarket Mobile Frontend (Ionic + Angular Standalone)
 
 Frontend movil de SurtiMarket con Ionic/Angular, arquitectura standalone, modales de negocio (cliente/admin/empleado), integracion con API REST y soporte de build Android via Capacitor.
 
@@ -100,7 +100,11 @@ npx ng serve --configuration development
 
 ```bash
 npm run build
+<<<<<<< HEAD
 npx serve ./www --listen 0.0.0.0   # Rama B: exponer en red local
+=======
+npx serve ./www   # Rama A: servir build estatico (docs conflicto)
+>>>>>>> feature/conflicto-docs-a
 ```
 
 ## Build Android (Capacitor) / APK
@@ -166,4 +170,5 @@ cd android
 - `docs/CHANGELOG.md`
 - `docs/modules/*.md`
 - `docs/conflicts.md`
+
 
