@@ -100,7 +100,7 @@ npx ng serve --configuration development
 
 ```bash
 npm run build
-npx serve ./www
+npx serve ./www --listen 0.0.0.0   # Rama B: exponer en red local
 ```
 
 ## Build Android (Capacitor) / APK
