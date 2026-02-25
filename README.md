@@ -100,7 +100,7 @@ npx ng serve --configuration development
 
 ```bash
 npm run build
-npx serve ./www
+npx serve ./www   # Rama A: servir build estatico (docs conflicto)
 ```
 
 ## Build Android (Capacitor) / APK
